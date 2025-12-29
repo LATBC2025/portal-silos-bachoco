@@ -313,14 +313,14 @@ export class MenuComponent implements OnInit, OnDestroy {
       // 2. GRUPO: Gestion de Catalogos (Solo para Nivel 1)
       {
         id: 'catalogos-group',
-        permisosRequeridos: [1,5], 
+        permisosRequeridos: [1,5],
         titulo: 'Gestión de Catálogos',
         subtitulo: '',
         icono:  ['fas', 'book'],
         isGroup: true,
         children: [
           { id: 'emp-int', permisosRequeridos: [1,5], titulo: 'Empleado Interno', ruta: '/registro-empleado-interno', icono:null, isGroup: false },
-          { id: 'emp-ext', permisosRequeridos: [1,5], titulo: 'Empleado Externo', ruta: '/registro-empleado-externo', icono:null, isGroup: false },
+          { id: 'emp-ext', permisosRequeridos: [1,5], titulo: 'Proveedores', ruta: '/registro-empleado-externo', icono:null, isGroup: false },
           { id: 'material', permisosRequeridos: [1,5], titulo: 'Material', ruta: '/registro-material', icono: null, isGroup: false },
           { id: 'bodega', permisosRequeridos: [1,5], titulo: 'Bodega', ruta: '/registro-bodega', icono:null, isGroup: false },
           { id: 'planta', permisosRequeridos: [1,5], titulo: 'Planta', ruta: '/registro-planta', icono: null, isGroup: false },
@@ -331,7 +331,7 @@ export class MenuComponent implements OnInit, OnDestroy {
       // 3. ENLACE DIRECTO: Programacion de Arribos
       {
         id: 'program-arribo',
-        permisosRequeridos: [1, 2, 3,5], 
+        permisosRequeridos: [1, 2, 3,5],
         titulo: '',
         subtitulo: 'Programación de Arribos',
         icono:  ['fas', 'gamepad'],
