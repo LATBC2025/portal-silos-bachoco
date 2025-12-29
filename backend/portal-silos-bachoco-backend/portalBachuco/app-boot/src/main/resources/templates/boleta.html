@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<style>
+		/* Estilos básicos para la estructura y el texto */
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			font-family: Arial, sans-serif;
+			font-size: 10pt;
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			width: 100%;
+			padding: 20px;
+		}
+
+		.header,
+		.info-section {
+			margin-bottom: 10px;
+			padding: 5px;
+			overflow: hidden;
+			/* Para contener los floats */
+		}
+
+		.float-left {
+			float: left;
+		}
+
+		.float-right {
+			float: right;
+		}
+
+		.section-title {
+			font-weight: bold;
+			text-align: center;
+			margin-bottom: 5px;
+		}
+
+		.data-label {
+			font-weight: bold;
+			margin-right: 5px;
+		}
+
+		.half-width {
+			width: 48%;
+		}
+
+		.third-width {
+			width: 30%;
+		}
+
+		/* Estilos para la tabla de pesos y descuentos */
+		.table-data {
+			width: 100%;
+			margin-top: 10px;
+			border: none;
+			font-size: 9pt;
+		}
+
+		.table-data td {
+			padding: 2px 5px;
+			border: none;
+		}
+
+		.table-header {
+			font-weight: bold;
+			text-align: center;
+			border: none;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="header">
+			<div class="float-left" style="width: 30%;">
+				<img th:src="${logoBase64}" alt="Logo de la empresa"
+					style="max-width: 150px; height: auto; display: block; margin: auto;" />
+				<!--<p style="font-weight: bold; margin-top: 5px;">ALMACEN: MATAMOROS</p>-->
+			</div>
+
+			<div class="float-left" style="width: 35%; text-align: center;">
+				<p style="font-size: 12pt; font-weight: bold;" th:text="${boleta.nombreSilo}">(CLIENTE)</p>
+				<p style="font-size: 8pt; margin: 0;">Proveedor del silo</p>
+				<p style="font-size: 14pt; font-weight: bold; margin: 10px 0;">
+					BOLETA DE SALIDA No. <span th:text="${boleta.folio}">161</span>
+				</p>
+			</div>
+		</div>
+		<br />
+		<br />
+		<div class="info-section">
+			<div class="float-left half-width">
+				<p><span class="data-label">GUIA:</span> <span style="font-weight: bold; font-size: 12pt;"
+						th:text="${boleta.guia}">161</span></p>
+				<p style="font-size: 12pt; font-weight: bold;"><span class="data-label">PRODUCTO:</span> <span
+						th:text="${boleta.producto}">SORGO ROJO</span></p>
+				<br />
+				<p><span class="data-label">PESO BRUTO:</span> <span
+						th:text="${#numbers.formatDecimal(boleta.pesoBruto, 1, 2)}">56.820</span> TON</p>
+				<p><span class="data-label">TARA:</span> <span
+						th:text="${#numbers.formatDecimal(boleta.tara, 1, 2)}">16.800</span> TON</p>
+				<p style="font-weight: bold;"><span class="data-label">PESO NETO:</span> <span
+						th:text="${#numbers.formatDecimal(boleta.pesoNeto, 1, 2)}">40.020</span> TON</p>
+				<p><span class="data-label">HUMEDAD:</span> <span th:text="${#numbers.formatDecimal(boleta.humedad, 1, 2)} + ' %'"></span></p>
+				<p><span class="data-label">NOMBRE DEL CHOFER:</span> <span th:text="${boleta.chofer}"></span></p>
+				<p><span class="data-label">LÍNEA TRANSPORTISTA:</span> <span th:text="${boleta.transportista}"></span></p>
+				<p><span class="data-label">PLACAS DE LA UNIDAD:</span> <span th:text="${boleta.placasVehiculo}"></span></p>
+				<p><span class="data-label">NÚMERO DE BOLETA DE EMBARQUE:</span> <span th:text="${boleta.numeroBoleta}"></span></p>
+			</div>
+
+
+		</div>
+		<br />
+		<br />
+		<div class="info-section">
+			<div class="float-left half-width">
+				<p><span class="data-label">No. TICKET BASCULA:</span> <span
+						th:text="${boleta.numeroTicketBascula}">00161</span></p>
+				<p><span class="data-label">OBSERVACIONES:</span> <span th:text="${boleta.observaciones}"></span></p>
+
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

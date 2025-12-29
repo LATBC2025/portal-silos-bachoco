@@ -1,0 +1,107 @@
+<div class="container-home">
+  <app-header class="fade-in component-header"></app-header>
+</div>
+<mat-card class="main-card">
+  <mat-card-content>
+    <div class="card shadow">
+      <div class="card-header text-white">
+        <h4 class="mb-0" style="text-align: center;">Gestión de Bodegas</h4>
+      </div>
+      <div class="card-body card-min">
+        <form [formGroup]="bodegaForm">
+          <div class="row mb-3">
+            <div class="col-md-8" >
+              <label for="bodega" class="form-label">Bodega</label>
+              <input type="text" formControlName="bodega" class="form-control" id="bodega" required>
+              <div class="text-danger size-text-error"  style="font-size: 1m;">
+                @if (bodegaForm.get('bodega')?.invalid && bodegaForm.get('bodega')?.touched) {
+                    @if (bodegaForm.get('bodega')?.errors?.['required']) {
+                    Campo requerido.
+                    }
+                    @if (bodegaForm.get('bodega')?.errors?.['min']) {
+                   Campo requerido.
+                    }
+                    @if (bodegaForm.get('bodega')?.errors?.['pattern']) {
+                   Formato inválido.
+                    }
+                }
+              </div>
+            </div>
+            <div class="col-md-4 mt-2 mt-lg-0">
+              <label for="siloId" class="form-label">SILO</label>
+              <select class="form-select" formControlName="siloId" id="siloId">
+                <option value='0'>Seleccione</option>
+                @for(item of listSilo;track item.id){
+                <option [value]="item.id">{{item.nombre}}</option>
+                }
+              </select>
+              <div class="text-danger size-text-error" style="font-size: 1em;">
+                @if (bodegaForm.get('siloId')?.invalid && bodegaForm.get('siloId')?.touched) {
+                    @if (bodegaForm.get('siloId')?.errors?.['required']) {
+                    Campo requerido.
+                    }
+                    
+                    @if (bodegaForm.get('siloId')?.errors?.['zeroValue']) {
+                  Campo requerido.
+                    }
+                }
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2 d-grid mt-3">
+            <label class="form-label"></label>
+            @if(showBtnUpdate==true){
+            <button type="submit" (click)="submmit()"
+              class="btn-custom">Registrar</button>
+            }@else{
+            <button type="submit" (click)="submmitUpdate()"
+              class="btn-custom">Actualizar</button>
+            }
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="contenedor-con-scroll mt-2 mt-lg-2">
+      <table class="table table-striped" style="margin-top: 5px;">
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Bodega</th>
+            <th scope="col">Silo</th>
+            <th scope="col">Guardar/Eliminar</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (bodega of ListaFilterBodega; track bodega.id;let i = $index) {
+          <tr>
+            <td>{{ bodega.id | number }}</td>
+            <td>{{ bodega.nombre }}</td>
+            <td>{{ bodega.nombreSilo }}</td>
+            <td>
+              <button class="btn btn-light" (click)="update(bodega)">
+                <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+              </button>
+              <button class="btn btn-light" (click)="deleteSilo(bodega.id,i)">
+                <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+              </button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="d-flex justify-content-between p-2">
+      <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+        (pageChange)="refreshCountries()">
+      </ngb-pagination>
+
+      <select class="form-select" style="width: auto" [(ngModel)]="pageSize" (ngModelChange)="refreshCountries()">
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="20">20</option>
+        <option [ngValue]="50">50</option>
+        <option [ngValue]="100">100</option>
+      </select>
+    </div>
+  </mat-card-content>
+</mat-card>

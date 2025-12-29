@@ -1,0 +1,106 @@
+<div class="container-home">
+  <app-header class="fade-in component-header"></app-header>
+</div>
+<mat-card class="main-card">
+  <mat-card-content>
+    <div class="card-header">
+      <h4 class="mb-0" class="text-title" style="text-align: center;">Reporte de Arribos</h4>
+    </div>
+    <form [formGroup]="formReporteArribo">
+      <div class="row mb-3">
+        <div class="col-md-3">
+          <label for="silo" class="form-label text-label">Silo</label>
+          <select class="form-select" [(ngModel)]="opcionSeleccionada" formControlName="siloId" id="silo">
+            <option value="0">Seleccionar</option>
+            @for(item of listSilo;track item.id){
+            <option [value]="item.id">{{item.nombre}}</option>
+            }
+          </select>
+          <div class="text-danger size-text-error">
+            @if (formReporteArribo.get('siloId')?.invalid && formReporteArribo.get('siloId')?.touched) {
+              @if (formReporteArribo.get('siloId')?.errors?.['required']) {
+              Campo requerido.
+              }
+              @if (formReporteArribo.get('siloId')?.errors?.['zeroValue']) {
+             Campo requerido.
+              }
+            }
+          </div>
+        </div>
+        <div class="col-md-4">
+          <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+          <input type="date" class="form-control" formControlName="fechaI" id="fechaInicio">
+          <div class="text-danger size-text-error">
+            @if (formReporteArribo.get('fechaI')?.invalid && formReporteArribo.get('fechaI')?.touched) {
+              @if (formReporteArribo.get('fechaI')?.errors?.['required']) {
+              Campo requerido.
+              }
+            }
+          </div>
+        </div>
+        <div class="col-md-4">
+          <label for="fechaFin" class="form-label">Fecha Fin</label>
+          <input type="date" class="form-control" formControlName="fechaF" id="fechaFin">
+           <div class="text-danger size-text-error">
+            @if (formReporteArribo.get('fechaF')?.invalid && formReporteArribo.get('fechaF')?.touched) {
+              @if (formReporteArribo.get('fechaF')?.errors?.['required']) {
+               Campo requerido.
+              }
+              @else if (formReporteArribo.get('fechaF')?.errors?.['rangoFechaInvalido']) { 
+                Campo fecha fin no debe ser menor a fecha inicio.
+            }
+            }
+          </div>
+        </div>
+      </div>
+
+    </form>
+
+
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <button class="btn-custom" (click)="submmit()">Buscar</button>
+      </div>
+    </div>
+    <!-- Sección de resultados -->
+    <div class="results-title">Toneladas Programas</div>
+    <div class="scroll-lista">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Toneladas</th>
+            <th scope="col">Material</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Pedido</th>
+            <th scope="col">Planta Destino</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (arribo of listaReporteArriboFilters; track arribo.id) {
+          <tr>
+            <td>{{ arribo.toneladas| number }}</td>
+            <td>{{ arribo.material }}</td>
+            <td>{{ arribo.fecha }}</td>
+            <td>{{ arribo.numeroPedido }}</td>
+            <td>{{ arribo.destinoPlanta }}</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-between p-2">
+      <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+        (pageChange)="refreshCountries()">
+      </ngb-pagination>
+
+      <select class="form-select" style="width: auto" [(ngModel)]="pageSize" (ngModelChange)="refreshCountries()">
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="20">20</option>
+        <option [ngValue]="50">50</option>
+        <option [ngValue]="100">100</option>
+      </select>
+    </div>
+  </mat-card-content>
+</mat-card>

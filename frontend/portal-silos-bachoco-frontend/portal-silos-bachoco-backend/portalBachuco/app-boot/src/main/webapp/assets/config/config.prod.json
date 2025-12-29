@@ -1,0 +1,11 @@
+{
+  "apiUrl": "https://silos-qas.bachoco.net/",
+  "baseUrl": "https://silos-qas.bachoco.net",
+  "production": false,
+  "timeout": 45000,
+  "version": "1.0.0",
+  "features": {
+    "enableAuth": true,
+    "enableLogging": false
+  }
+}

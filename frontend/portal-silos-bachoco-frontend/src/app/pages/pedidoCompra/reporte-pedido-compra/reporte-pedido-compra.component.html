@@ -1,0 +1,130 @@
+<div class="container-home">
+  <app-header class="fade-in component-header"></app-header>
+</div>
+<mat-card class="main-card">
+  <mat-card-content>
+    <div class="card-header">
+      <h4 class="mb-0" class="text-title" style="text-align: center;">Pedido compra</h4>
+    </div>
+    <form [formGroup]="formProgramArribo">
+      <div class="row mb-3">
+        <div class="col-md-2">
+          <label for="silo" class="form-label">Silo</label>
+          <select class="form-select" formControlName="silo" id="silo">
+            <option value="0">Seleccionar</option>
+            @for(item of listSilo;track item.id){
+            <option [value]="item.id">{{item.nombre}}</option>
+            }
+          </select>
+          <div class="text-danger size-text-error">
+            @if (formProgramArribo.get('silo')?.invalid && formProgramArribo.get('silo')?.touched) {
+            @if (formProgramArribo.get('silo')?.errors?.['required']) {
+            Campo requerido.
+            }
+            @if (formProgramArribo.get('silo')?.errors?.['zeroValue']) {
+            Campo requerido.
+            }
+            }
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="material" class="form-label">Material</label>
+          <select class="form-select" formControlName="material" id="material">
+            <option value="0">Seleccionar</option>
+            @for(item of listMateriales;track item.id){
+            <option [value]="item.id">{{item.descripcion}}</option>
+            }
+          </select>
+          <div class="text-danger size-text-error">
+            @if (formProgramArribo.get('material')?.invalid && formProgramArribo.get('material')?.touched) {
+            @if (formProgramArribo.get('material')?.errors?.['required']) {
+            Campo requerido.
+            }
+            @if (formProgramArribo.get('material')?.errors?.['zeroValue']) {
+            Campo requerido.
+            }
+            }
+          </div>
+        </div>
+        <div class="col-md-3 mb-5">
+          <label for="fechaInicio" class="form-label">Fecha inicio</label>
+          <input type="date" class="form-control" formControlName="fechaInicio" id="fechaInicio">
+        </div>
+        <div class="col-md-3">
+          <label for="fechaFin" class="form-label">Fecha fin</label>
+          <input type="date" class="form-control" formControlName="fechaFin" id="fechaFin">
+          <div class="text-danger size-text-error">
+            @if (formProgramArribo.get('fechaFin')?.invalid && formProgramArribo.get('fechaFin')?.touched) {
+            @if (formProgramArribo.get('fechaFin')?.errors?.['rangoFechaInvalido']) {
+            Campo fecha fin no debe ser menor a fecha inicio.
+            }
+            }
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <button class="btn-custom" (click)="findAllPedidosCompra()">Buscar</button>
+      </div>
+    </div>
+    <div class="contenedor-con-scroll">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Pedido de compra</th>
+            <th scope="col">Cantidad pedida</th>
+            <th scope="col">Cantidad entregada</th>
+            <th scope="col">Cantidad despachada</th>
+            <th scope="col">Cantidad pendiente de despacho</th>
+            <th scope="col">Contrato legal</th>
+            <th scope="col">Certificado de depósito</th>
+            <th scope="col">Cargar documentos</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pedidoCompra of listaPedidosCompraFilter; track pedidoCompra.pedidoCompraId) {
+          <tr>
+            <td>{{ pedidoCompra.pedidoCompraId| number }}</td>
+            <td>{{ pedidoCompra.numeroPedido }}</td>
+            <td>{{ pedidoCompra.cantidadPedida }}</td>
+            <td>{{ pedidoCompra.cantidadEntregada }}</td>
+            <td>{{ pedidoCompra.cantidadDespachada }}</td>
+            <td>{{ pedidoCompra.cantidadPendienteDespachada}}</td>
+            <td>{{ pedidoCompra.contratoLegal }}</td>
+            <td>@if(pedidoCompra.urlCertificadoDeposito!=null && pedidoCompra.urlCertificadoDeposito!=undefined){
+              <button class="btn btn-light" (click)="downloadPdf(pedidoCompra.urlCertificadoDeposito,pedidoCompra.tipoExtencion)">
+                <fa-icon [icon]="['fas', 'file-pdf']"></fa-icon>
+              </button>
+              }
+            </td>
+            <td>
+              <input type="file" #fileInput hidden accept="application/pdf"
+                (change)="onFileSelected($event,pedidoCompra.pedidoCompraId,pedidoCompra.urlCertificadoDeposito)">
+
+              <button class="btn btn-light" (click)="fileInput.click()">
+                <fa-icon [icon]="['fas', 'file-import']"></fa-icon>
+              </button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="d-flex justify-content-between p-2">
+      <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+        (pageChange)="refreshCountries()">
+      </ngb-pagination>
+
+      <select class="form-select" style="width: auto" [(ngModel)]="pageSize" (ngModelChange)="refreshCountries()">
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="20">20</option>
+        <option [ngValue]="50">50</option>
+        <option [ngValue]="100">100</option>
+      </select>
+    </div>
+  </mat-card-content>
+</mat-card>

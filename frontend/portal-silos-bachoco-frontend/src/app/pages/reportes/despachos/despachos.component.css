@@ -1,0 +1,210 @@
+* {
+  font-family: Montserrat !important;
+}
+
+.main-card {
+  margin: 20px 20px 20px 20px;
+  height: 500px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: left;
+}
+
+.card-header h4 {
+  font: normal normal bold 22px/20px Montserrat;
+  letter-spacing: 0.39px;
+}
+
+.text-formulario {
+  text-align: left;
+  font: normal normal normal 18px/20px Montserrat;
+  letter-spacing: 0.36px;
+  color: #231F20;
+}
+
+.text-label {
+  text-align: left;
+  font: normal normal medium 14px/20px Montserrat !important;
+  letter-spacing: 0.25px;
+  color: #000000;
+  opacity: 1;
+}
+
+.btn-custom {
+  width: 88px !important;
+  height: 34px !important;
+  /* UI Properties */
+  background: var(--unnamed-color-f37321) 0% 0% no-repeat padding-box !important;
+  background: #F37321 0% 0% no-repeat padding-box !important;
+  border-radius: 2px !important;
+  font: normal normal medium 14px/16px Montserrat !important;
+}
+
+.report-container {
+  background: white;
+  padding: 20px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 1000px;
+  margin: auto;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.row label {
+  font-weight: bold;
+  color: #333;
+  min-width: 120px;
+}
+
+.row input[type="text"],
+.row input[type="date"] {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* Input solo lectura en azul */
+.readonly-blue {
+  background: #007bff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: default;
+}
+
+.row button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.row button:hover {
+  background-color: #0056b3;
+}
+
+/* Sección de resultados */
+.results-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #444;
+  margin: 20px 0 10px 0;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 5px;
+}
+
+/* Tabla */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  font: normal normal normal 14px/16px Montserrat !important;
+}
+
+
+table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  font: normal normal normal 14px/16px Montserrat !important;
+}
+
+/* .table thead {
+  border: 3px solid #0000;
+}
+.table{
+  border: 1px solid #0000;
+}
+ */
+
+.scroll-lista-2 {
+  margin-top: 10px;
+}
+
+.text-title {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.container-home {
+  position: relative;
+  width: 100%;
+  height: 130px;
+}
+
+.component-header {
+  position: absolute;
+  width: 97%;
+  top: 30px;
+  left: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .row label {
+    min-width: unset;
+  }
+
+  .component-header {
+    position: absolute;
+    width: 90%;
+    top: 30px;
+    left: 20px;
+  }
+
+  .scroll-lista-2 {
+    margin-top: 50px;
+  }
+}
+
+.container-action-despacho {
+  position: relative;
+  display: flex;
+  justify-content: left;
+  padding: 5px 0px;
+}
+
+/* Botones con íconos */
+.button-group {
+  display: flex;
+  gap: 10px;
+  justify-content: end;
+
+}
+
+.button-group button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #007bff;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

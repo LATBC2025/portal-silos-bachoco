@@ -1,0 +1,106 @@
+<div class="container-home">
+  <app-header class="fade-in component-header"></app-header>
+</div>
+<mat-card class="main-card">
+  <mat-card-content>
+    <div class="card shadow">
+      <div class="card-header text-white">
+        <h4 class="mb-0" style="text-align: center;">Gestión de Materiales</h4>
+      </div>
+      <div class="card-body card-min">
+        <form [formGroup]="formMaterial">
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label for="numero" class="form-label">Número de Material </label>
+              <input type="text" class="form-control" formControlName="numero" id="numero"
+                placeholder="Ingrese el Número de Material" required>
+                 <div class="text-danger size-text-error" style="font-size: 1em;">
+                @if (formMaterial.get('numero')?.invalid && formMaterial.get('numero')?.touched) {
+                    @if (formMaterial.get('numero')?.errors?.['required']) {
+                    Campo requerido.
+                    }
+                    @if (formMaterial.get('numero')?.errors?.['min']) {
+                   Campo requerido.
+                    }
+                    @if (formMaterial.get('numero')?.errors?.['pattern']) {
+                    Formato inválido.
+                    }
+                }
+              </div>
+            </div>
+            <div class="col-md-7">
+              <label for="desc" class="form-label">Descripción</label>
+              <input type="text" class="form-control" formControlName="descripcion" id="desc"
+                placeholder="Ingrese la Descripción">
+                 <div class="text-danger size-text-error" style="font-size: 1em;">
+                @if (formMaterial.get('descripcion')?.invalid && formMaterial.get('descripcion')?.touched) {
+                    @if (formMaterial.get('descripcion')?.errors?.['required']) {
+                    Campo requerido.
+                    }
+                    @if (formMaterial.get('descripcion')?.errors?.['min']) {
+                   Campo requerido.
+                    }
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-2 d-grid mt-3">
+              <label class="form-label"></label>
+              @if(showBtnUpdate==true){
+              <button type="submit" (click)="submmit()"
+                class="btn-custom">Registrar</button>
+              }@else{
+              <button type="submit" (click)="submmitUpdate()"
+                class="btn-custom">Actualizar</button>
+              }
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="contenedor-con-scroll">
+      <table class="table table-striped" style="margin-top: 5px;">
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Número de Material</th>
+            <th scope="col">Descripción</th>
+            <th scope="col">Guardar/Eliminar</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (material of listaMaterialFilter; track material.id;let i = $index) {
+          <tr>
+            <td>{{ material.id | number }}</td>
+            <td>{{ material.nombre }}</td>
+            <td style="width: 300px;">{{ material.descripcion }}</td>
+            <td>
+              <button class="btn btn-light" (click)="update(material)">
+                <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+              </button>
+              <button class="btn btn-light" (click)="deleteSilo(material.id,i)">
+                <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+              </button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="d-flex justify-content-between p-2">
+      <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+        (pageChange)="refreshCountries()">
+      </ngb-pagination>
+
+      <select class="form-select" style="width: auto" [(ngModel)]="pageSize" (ngModelChange)="refreshCountries()">
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="20">20</option>
+        <option [ngValue]="50">50</option>
+        <option [ngValue]="100">100</option>
+      </select>
+    </div>
+  </mat-card-content>
+</mat-card>

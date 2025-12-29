@@ -1,0 +1,11 @@
+export interface PedidoTrasladoResponse {
+    pedidoTrasladoId:          number;
+    nombrePlantaDestino:       string;
+    numPedidoTraslado:         string;
+    cantidadPedido:            number;
+    cantidadTraslado:          number;
+    cantidadRecibidaPa:          number;
+    cantidadPendienteTraslado: number;
+    numCompraAsociado:         string;
+    trasladosPendFact:         number;
+}

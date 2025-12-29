@@ -1,0 +1,133 @@
+* {
+  font-family: Montserrat !important;
+}
+
+.card-header {
+  display: flex;
+  justify-content: left;
+}
+
+.card-header h4 {
+  font: normal normal bold 22px/20px Montserrat;
+  letter-spacing: 0.39px;
+}
+.text-title {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.report-container {
+  background: white;
+  padding: 20px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 1000px;
+  margin: auto;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.row label {
+  font-weight: bold;
+  color: #333;
+  min-width: 120px;
+}
+
+.row input[type="text"],
+.row input[type="date"] {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+
+
+.row button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.row button:hover {
+  background-color: #0056b3;
+}
+
+/* Tabla */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+table th{
+    background-color: rgba(243, 115, 33, 0.1);
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  font: normal normal normal 14px/16px Montserrat !important;
+}
+
+
+table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  font: normal normal normal 14px/16px Montserrat !important;
+}
+
+/* Sección de resultados */
+.results-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #444;
+  margin: 20px 0 10px 0;
+  padding-bottom: 5px;
+}
+
+
+.pagination .page-item.active .page-link {
+  background-color: #bcc0c7;
+  /* Cambia el color de fondo a azul de Bootstrap */
+  border-color: #a0acbd;
+  /* Cambia el color del borde */
+  color: white;
+  /* Cambia el color del texto a blanco */
+}
+
+/* Optional: Targets the hover state for better user experience */
+.pagination .page-item.active .page-link:hover {
+  background-color: #63666b;
+  /* Color de fondo más oscuro al pasar el ratón */
+  border-color: #869ab8;
+}
+
+/* Optional: Targets the focus state for accessibility */
+.pagination .page-item.active .page-link:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .row label {
+    min-width: unset;
+  }
+}

@@ -1,0 +1,125 @@
+* {
+  font-family: Montserrat !important;
+}
+
+.card-header {
+  display: flex;
+  justify-content: left;
+}
+
+.card-header h4 {
+  font: normal normal bold 22px/20px Montserrat;
+  letter-spacing: 0.39px;
+}
+
+.text-formulario {
+  text-align: left;
+  font: normal normal normal 18px/20px Montserrat;
+  letter-spacing: 0.36px;
+  color: #231F20;
+}
+
+.text-label {
+  text-align: left;
+  font: normal normal medium 14px/20px Montserrat !important;
+  letter-spacing: 0.25px;
+  color: #000000;
+  opacity: 1;
+}
+
+.report-container {
+  background: white;
+  padding: 20px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 1000px;
+  margin: auto;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+/* Tabla */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+table th {
+  background-color: rgba(243, 115, 33, 0.1);
+}
+
+table tr {
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  font: normal normal normal 14px/16px Montserrat !important;
+}
+
+
+table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  font: normal normal normal 14px/16px Montserrat !important;
+}
+
+.text-title {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.btn-load-file {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .row label {
+    min-width: unset;
+  }
+
+  .component-header {
+    width: 90%;
+    margin: 10px 3px 10px 3px;
+  }
+}
+
+.container-action-despacho {
+  position: relative;
+  display: flex;
+  justify-content: left;
+  padding: 5px 0px;
+}
+
+/* Botones con íconos */
+.button-group {
+  display: flex;
+  gap: 10px;
+  justify-content: end;
+
+}
+
+.button-group button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

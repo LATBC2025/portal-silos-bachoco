@@ -1,0 +1,311 @@
+<div class="container-home">
+    <app-header class="fade-in component-header"></app-header>
+</div>
+<mat-card class="main-card">
+    <mat-card-content>
+        <div class="card-header">
+            <h4 class="mb-0" class="text-title" style="text-align: center;">Confirmación de Despachos</h4>
+        </div>
+        <h4 class="text-formulario">Formulario</h4>
+        <form [formGroup]="formFilter">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="silo" class="form-label text-label">Silo</label>
+                    <select class="form-select" [(ngModel)]="opcionSeleccionada" (change)="onSeleccionar($event)"
+                        formControlName="siloId" id="tipoMaiz">
+                        <option value="0">Seleccionar</option>
+                        @for(item of listSilo;track item.id){
+                        <option [value]="item.id">{{item.nombre}}</option>
+                        }
+                    </select>
+                    <div class="text-danger" style="font-size: 0.9em;">
+                        @if (formFilter.get('siloId')?.invalid && formFilter.get('siloId')?.touched) {
+                        @if (formFilter.get('siloId')?.errors?.['required']) {
+                        Campo requerido.
+                        }
+                        @if (formFilter.get('siloId')?.errors?.['zeroValue']) {
+                        Campo requerido.
+                        }
+                        }
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="tipoMaiz" class="form-label">Material</label>
+                    <select class="form-select" (change)="onSeleccionarMaterial($event)" formControlName="materialId"
+                        id="tipoMaiz">
+                        <option value="0">Seleccionar</option>
+                        @for(item of listMateriales;track item.id){
+                        <option [value]="item.id">{{item.descripcion}}</option>
+                        }
+                    </select>
+                    <div class="text-danger">
+                        @if (formFilter.get('materialId')?.invalid && formFilter.get('materialId')?.touched) {
+                        @if (formFilter.get('materialId')?.errors?.['required']) {
+                        Campo requerido.
+                        }
+                        @if (formFilter.get('materialId')?.errors?.['zeroValue']) {
+                        Campo requerido.
+                        }
+                        }
+                    </div>
+                </div>
+                <div class="col-md-2 mb-5">
+                    <label for="fechaInicio" class="form-label">Fecha inicio</label>
+                    <input type="date" formControlName="fechaI" class="form-control" id="fechaInicio">
+                </div>
+                <div class="col-md-2 mb-5">
+                    <label for="fechaFin" class="form-label">Fecha fin</label>
+                    <input type="date" formControlName="fechaF" class="form-control" id="fechaFin">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1">
+                    <button class="btn-custom" [disabled]="formFilter.invalid" (click)="search()">Buscar</button>
+                </div>
+            </div>
+        </form>
+        <div class="container-action-despacho">
+            <div class="button-group">
+                <button class="btn-custom" [disabled]="disabledBtnActions" (click)="addItem()">+ Fila</button>
+                <button class="btn-custom" [disabled]="disabledBtnActions" (click)="fileInput.click()">Excel</button>
+                <input type="file" class="btn-load-file" type="file" #fileInput (change)="onFileChange($event)"
+                    accept=".xlsx, .xls">
+            </div>
+        </div>
+        <div class="scroll-lista">
+            <form [formGroup]="formConfDespacho">
+                <table class="table table-striped" style="min-width: 2600px;">
+                    <thead>
+                        <tr>
+                            <th scope="col">Bodega</th>
+                            <th scope="col">Material</th>
+                            <th scope="col">Fecha de embarque</th>
+                            <th scope="col"># de boleta embarque</th>
+                            <th scope="col">Peso bruto</th>
+                            <th scope="col">Peso tara</th>
+                            <th scope="col">Humedad</th>
+                            <th scope="col">Chofer</th>
+                            <th scope="col">Placa/Jaula</th>
+                            <th scope="col">Linea transportista</th>
+                            <th scope="col">Destino</th>
+                            <th scope="col">Pedido</th>
+                            <th scope="col" style="width: 200px !important;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody formArrayName="items">
+                        <tr *ngFor="let item of items.controls; let i=index" [formGroupName]="i">
+                            <td>
+                                <select class="form-select" formControlName="claveBodega">
+                                    <option value="0">Seleccionar</option>
+                                    @for(item of listaBodega;track item.id){
+                                    <option [value]="item.nombre">{{item.nombre}}</option>
+                                    }
+                                </select>
+                                <div class="text-danger" style="font-size: 0.8em;">
+                                    @if (item.get('claveBodega')?.invalid && item.get('claveBodega')?.touched) {
+                                    @if (item.get('claveBodega')?.errors?.['required']) {
+                                    Campo requerido.
+                                    }
+
+                                    @if (item.get('claveBodega')?.errors?.['zeroValue']) {
+                                    Campo requerido.
+                                    }
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <select class="form-select" formControlName="claveMaterial">
+                                    <option value="0">Seleccionar</option>
+                                    @for(item of listMateriales;track item.id){
+                                    <option [value]="item.nombre">{{item.descripcion}}</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <input type="date" formControlName="fechaEmbarque" class="form-control" id="inicio">
+                                <div class="text-danger" style="font-size: 0.8em;">
+                                    @if (item.get('fechaEmbarque')?.invalid && item.get('fechaEmbarque')?.touched) {
+                                    @if (item.get('fechaEmbarque')?.errors?.['required']) {
+                                    Campo requerido.
+                                    }
+                                    @if (item.get('fechaEmbarque')?.errors?.['fechaFutura']) {
+                                    Fecha inválida, solo se permite fecha actual
+                                    }
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-danger" style="font-size: 0.8em;">
+                                    <input type="text" formControlName="numBoleta" class="form-control">
+                                    <div class="text-danger" style="font-size: 0.8em;">
+                                        @if (item.get('numBoleta')?.invalid && item.get('numBoleta')?.touched) {
+                                        @if (item.get('numBoleta')?.errors?.['required']) {
+                                        Campo requerido.
+                                        }
+                                        @if (item.get('numBoleta')?.errors?.['pattern']) {
+                                        Formato inválido.
+                                        }
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" formControlName="pesoBruto" class="form-control">
+                                <div class="text-danger" style="font-size: 0.8em;">
+                                    @if (item.get('pesoBruto')?.invalid && item.get('pesoBruto')?.touched) {
+                                    @if (item.get('pesoBruto')?.errors?.['required']) {
+                                    Campo requerido.
+                                    }
+                                    @if (item.get('pesoBruto')?.errors?.['min']) {
+                                    El valor debe ser mayor a 0.
+                                    }
+                                    @if (item.get('pesoBruto')?.errors?.['pattern']) {
+                                    Formato inválido.
+                                    }
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" formControlName="pesoTara" class="form-control">
+                                <div class="text-danger" style="font-size: 0.8em;">
+                                    @if (item.get('pesoTara')?.invalid && item.get('pesoTara')?.touched) {
+                                    @if (item.get('pesoTara')?.errors?.['required']) {
+                                    Campo requerido.
+                                    }
+                                    @if (item.get('pesoTara')?.errors?.['min']) {
+                                    El valor debe ser mayor a 0.
+                                    }
+
+                                    @if (item.get('pesoTara')?.errors?.['pattern']) {
+                                    Formato inválido.
+                                    }
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" formControlName="humedad" class="form-control">
+                                <div class="text-danger" style="font-size: 0.8em;">
+                                    @if (item.get('humedad')?.invalid && item.get('humedad')?.touched) {
+                                    @if (item.get('humedad')?.errors?.['required']) {
+                                    Campo requerido.
+                                    }
+                                    @if (item.get('humedad')?.errors?.['pattern']) {
+                                    Formato inválido.
+                                    }
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" formControlName="chofer" class="form-control">
+                                <div class="text-danger" style="font-size: 0.8em;">
+                                    @if (item.get('chofer')?.invalid && item.get('chofer')?.touched) {
+                                    @if (item.get('chofer')?.errors?.['required']) {
+                                    Campo requerido.
+                                    }
+
+                                    @if (item.get('chofer')?.errors?.['pattern']) {
+                                    Formato inválido.
+                                    }
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" formControlName="placaJaula" class="form-control">
+                                <div class="text-danger" style="font-size: 0.8em;">
+                                    @if (item.get('placaJaula')?.invalid && item.get('placaJaula')?.touched) {
+                                    @if (item.get('placaJaula')?.errors?.['required']) {
+                                    Campo requerido.
+                                    }
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" formControlName="lineaTransportista" class="form-control">
+
+                                <div class="text-danger" style="font-size: 0.8em;">
+                                    @if (item.get('lineaTransportista')?.invalid &&
+                                    item.get('lineaTransportista')?.touched)
+                                    {
+                                    @if (item.get('lineaTransportista')?.errors?.['required']) {
+                                    Campo requerido.
+                                    }
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <select class="form-select" formControlName="destinoId" (change)="onSeleccionarPlantaDestino($event,i)">
+                                    <option value="0">Seleccionar</option>
+                                    @for(item of listPlantas;track item.id){
+                                    <option [value]="item.id">{{item.nombre}}</option>
+                                    }
+                                </select>
+                                <div class="text-danger" style="font-size: 0.8em;">
+                                    @if (item.get('destinoId')?.invalid && item.get('destinoId')?.touched) {
+                                    @if (item.get('destinoId')?.errors?.['required']) {
+                                    Campo requerido.
+                                    }
+
+                                    @if (item.get('destinoId')?.errors?.['zeroValue']) {
+                                    Campo requerido.
+                                    }
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <select class="form-select" formControlName="numPedidoTraslado">
+                                    <option value="0">Seleccionar</option>
+                                    @for(item of getFilteredPlantas(i);track item.numeroPedido){
+                                    <option [value]="item.numeroPedido">{{item.numeroPedido}}</option>
+                                    }
+                                </select>
+                                <div class="text-danger" style="font-size: 0.8em;">
+                                    @if (item.get('numPedidoTraslado')?.invalid &&
+                                    item.get('numPedidoTraslado')?.touched) {
+                                    @if (item.get('numPedidoTraslado')?.errors?.['required']) {
+                                    Campo requerido.
+                                    }
+
+                                    @if (item.get('numPedidoTraslado')?.errors?.['zeroValue']) {
+                                    Campo requerido.
+                                    }
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-light"
+                                    [disabled]="this.getIdDespacho(i) && isModificable[i]==true"
+                                    (click)="executeProcess(i)">
+                                    <fa-icon [icon]="['fas', 'save']"></fa-icon>
+                                </button>
+                                <button class="btn btn-light" [disabled]="isDownloading[i]" (click)="enableFormItem(i)">
+                                    <fa-icon [icon]="['fas', 'edit']"></fa-icon>
+                                </button>
+                                <button class="btn btn-light" [disabled]="!this.getIdDespacho(i)"
+                                    (click)="downloadPdf(i)">
+                                    <fa-icon [icon]="['fas', 'file-pdf']"></fa-icon>
+                                </button>
+                                <button class="btn btn-light" [disabled]="!this.getIdDespacho(i)"
+                                    (click)="deleteConfirmacionDespachoSAP532(i)">
+                                    <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </form>
+        </div>
+        <div class="d-flex justify-content-between p-2">
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                (pageChange)="refreshPedidos()">
+            </ngb-pagination>
+            <select class="form-select" style="width: auto" [(ngModel)]="pageSize" (ngModelChange)="refreshPedidos()">
+                <option [ngValue]="5">5</option>
+                <option [ngValue]="10">10</option>
+                <option [ngValue]="20">20</option>
+                <option [ngValue]="50">50</option>
+                <option [ngValue]="100">100</option>
+            </select>
+        </div>
+    </mat-card-content>
+</mat-card>

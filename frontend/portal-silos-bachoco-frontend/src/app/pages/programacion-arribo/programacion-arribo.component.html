@@ -1,0 +1,231 @@
+<div class="container-home">
+  <app-header class="fade-in component-header"></app-header>
+</div>
+<mat-card class="main-card">
+  <mat-card-content>
+    <div class="card-header">
+      <h4 class="mb-0" class="text-title" style="text-align: center;">Programación de arribos</h4>
+    </div>
+    <div class="card-body card-min">
+      <form [formGroup]="formArriboFilter">
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <label for="silo" class="form-label">Silo</label>
+            <select class="form-select" formControlName="silo" id="silo">
+              <option value="0">Seleccionar</option>
+              @for(item of listSilo;track item.id){
+              <option [value]="item.id">{{item.nombre}}</option>
+              }
+            </select>
+            <div class="text-danger size-text-error">
+              @if (formArriboFilter.get('silo')?.invalid && formArriboFilter.get('silo')?.touched) {
+
+              @if (formArriboFilter.get('silo')?.errors?.['required']) {
+              Campo requerido.
+              }
+
+              @if (formArriboFilter.get('silo')?.errors?.['zeroValue']) {
+              Campo requerido.
+              }
+              }
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="planta" class="form-label">Planta</label>
+            <select class="form-select" formControlName="planta" id="planta">
+              <option value="0">Seleccionar</option>
+              @for(item of listPlantas;track item.id){
+              <option [value]="item.id">{{item.nombre}}</option>
+              }
+            </select>
+            <div class="text-danger size-text-error">
+              @if (formArriboFilter.get('planta')?.invalid && formArriboFilter.get('planta')?.touched) {
+
+              @if (formArriboFilter.get('planta')?.errors?.['required']) {
+              Campo requerido.
+              }
+
+              @if (formArriboFilter.get('planta')?.errors?.['zeroValue']) {
+              Campo requerido.
+              }
+              }
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label for="material" class="form-label">Material</label>
+            <select class="form-select" formControlName="material" id="material">
+              <option value="0">Seleccionar</option>
+              @for(item of listMateriales;track item.id){
+              <option [value]="item.id">{{item.descripcion}}</option>
+              }
+            </select>
+            <div class="text-danger size-text-error">
+              @if (formArriboFilter.get('material')?.invalid && formArriboFilter.get('material')?.touched) {
+
+              @if (formArriboFilter.get('material')?.errors?.['required']) {
+              Campo requerido.
+              }
+
+              @if (formArriboFilter.get('material')?.errors?.['zeroValue']) {
+              Campo requerido.
+              }
+              }
+            </div>
+          </div>
+          <div class="col-md-2 mb-3">
+            <button type="submit" class="btn-custom" (click)="findStock()">Buscar</button>
+          </div>
+        </div>
+        <!--         <div class="row mb-3">
+          <div class="col-md-2 mb-3">
+            <button type="submit" class="btn-custom" (click)="findStock()">Buscar</button>
+          </div>
+        </div> -->
+
+      </form>
+    </div>
+    <div class="text-section row mb-3">
+      <div class="col-md-3">
+        <label>Promedio de toneladas por unidad</label>
+      </div>
+      <div class="col-md-3">
+        <div class="text-box">{{promedioArriboCamiones | numberFormat}}</div>
+      </div>
+      <div class="col-md-1">
+        <label>Stock en Silo</label>
+      </div>
+      <div class="col-md-2">
+        <div class="text-box">{{stockSilo| numberFormat}}</div>
+      </div>
+    </div>
+    <!-- 2. Contenedor de texto con label -->
+    <div class="container__program">
+
+      <!-- 3. Lista con 2 columnas -->
+      <table class="table table-striped">
+        <tr>
+          <th></th>
+          <th>Pedido</th>
+          <th>Cantidad Pedido</th>
+        </tr>
+
+        @for (pedidoTraslado of listProgramPedTrasladoFilter; track pedidoTraslado.pedidoTrasladoId) {
+        <tr>
+          <td> <mat-checkbox class="example-margin" [ngModel]="pedidoTraslado.activo"
+              (ngModelChange)="pedidoTraslado.activo = $event; seleccionarFila(pedidoTraslado)"></mat-checkbox></td>
+          <td>{{ pedidoTraslado.numeroPedido }}</td>
+          <td>{{ pedidoTraslado.cantidad | number }}</td>
+        </tr>
+        }
+      </table>
+      <div class="d-flex justify-content-between p-2">
+        <ngb-pagination [collectionSize]="collectionSizePedTraslado" [(page)]="pagePedTraslado"
+          [pageSize]="pageSizePedTraslado" (pageChange)="refreshPedidos()">
+        </ngb-pagination>
+
+        <select class="form-select" style="width: auto" [(ngModel)]="pageSizePedTraslado"
+          (ngModelChange)="refreshPedidos()">
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="20">20</option>
+          <option [ngValue]="50">50</option>
+          <option [ngValue]="100">100</option>
+        </select>
+      </div>
+
+      <!-- 4. Fila de botones con íconos -->
+      <div class="container-actions">
+        <p>Toneladas Programadas</p>
+        <div class="button-group">
+          <button class="btn btn-light" [disabled]="actionsBottonsDisabled" (click)="fileInput.click()">
+            <fa-icon [icon]="['fas', 'file-excel']"></fa-icon>
+          </button>
+          <input type="file" class="btn-load-file" type="file" #fileInput (change)="onFileChangeNoEncebzados($event)"
+            accept=".xlsx, .xls">
+          <button class="btn btn-light" (click)="addItem()" [disabled]="actionsBottonsDisabled">
+            <fa-icon [icon]="['fas', 'plus']"></fa-icon>
+          </button>
+          <button class="btn btn-light" (click)="procesarFormularioProgramArribo()">
+            <fa-icon [icon]="['fas', 'save']"></fa-icon>
+          </button>
+        </div>
+      </div>
+
+      <form [formGroup]="formProgramAribo">
+        <div class="contenedor-con-scroll">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Toneladas</th>
+                <th scope="col">Material</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Eliminar Fila</th>
+              </tr>
+            </thead>
+            <tbody formArrayName="items">
+              <tr *ngFor="let item of visibleItems; let i=index" [formGroupName]="i">
+                <td>
+                  <input type="number" formControlName="tonelada" class="form-control" min="1">
+                  <div class="text-danger" style="font-size: 0.9em;">
+
+                    @if (items.at(i).get('tonelada')?.invalid && items.at(i).get('tonelada')?.touched) {
+
+                    @if (items.at(i).get('tonelada')?.errors?.['required']) {
+                    Campo requerido.
+                    }
+
+                    @if (items.at(i).get('tonelada')?.errors?.['min']) {
+                    Tonelada debe ser mayor a cero (0).
+                    }
+                    }
+                  </div>
+                </td>
+                <td>
+                  <select class="form-select" formControlName="material" id="material" [disabled]="true">
+                    <option value="0">Seleccionar</option>
+                    @for(item of listMateriales;track item.id){
+                    <option [value]="item.id">{{item.descripcion}}</option>
+                    }
+                  </select>
+                  <div class="text-danger" style="font-size: 0.9em;">
+                    @if (items.at(i).get('material')?.invalid && items.at(i).get('material')?.touched) {
+                    Campo requerido.
+                    }
+                  </div>
+                </td>
+                <td>
+                  <input type="date" formControlName="fecha" class="form-control">
+                  <div class="text-danger" style="font-size: 0.9em;">
+                    @if (items.at(i).get('fecha')?.invalid && items.at(i).get('fecha')?.touched) {
+                    Campo requerido.
+                    }
+                  </div>
+                </td>
+                <td>
+                  <button class="btn btn-light" (click)="removeItemFromArray(i)">
+                    <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </form>
+      <div class="d-flex justify-content-between p-2">
+        <ngb-pagination [collectionSize]="collectionSizeArribo" [(page)]="page" [pageSize]="pageSize"
+          (pageChange)="onPageChange()">
+        </ngb-pagination>
+
+        <select class="form-select form-select-sm" style="width: auto" [(ngModel)]="pageSize"
+          (ngModelChange)="onPageSizeChange()">
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="20">20</option>
+          <option [ngValue]="50">50</option>
+          <option [ngValue]="100">100</option>
+        </select>
+      </div>
+    </div>
+
+  </mat-card-content>
+</mat-card>

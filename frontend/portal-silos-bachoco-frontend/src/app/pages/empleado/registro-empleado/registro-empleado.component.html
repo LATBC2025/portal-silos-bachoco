@@ -1,0 +1,163 @@
+<div class="container-home">
+  <app-header class="fade-in component-header"></app-header>
+</div>
+<div class="card card-formulario">
+  <div class="card-header text-white">
+    <h4 class="mb-0" style="text-align: center;">Gestión de Empleados Internos</h4>
+  </div>
+  <div class="card-body card-min">
+    <form [formGroup]="formEmpleadoInterno">
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input type="text" class="form-control" formControlName="nombre" id="nombre" placeholder="Ingrese el nombre"
+            required>
+          <div class="text-danger size-text-error">
+            @if (formEmpleadoInterno.get('nombre')?.invalid && formEmpleadoInterno.get('nombre')?.touched) {
+            @if (formEmpleadoInterno.get('nombre')?.errors?.['required']) {
+            Campo requerido.
+            }
+            @if (formEmpleadoInterno.get('nombre')?.errors?.['min']) {
+            Campo requerido.
+            }
+            @if (formEmpleadoInterno.get('nombre')?.errors?.['pattern']) {
+                Formato inválido.
+                }
+            }
+          </div>
+        </div>
+        <div class="col-md-8 mt-2 mt-lg-0">
+          <label for="email" class="form-label">Correo Electrónico</label>
+          <input type="email" class="form-control" formControlName="email" id="email" placeholder="correo@empresa.com"
+            required>
+          <div class="text-danger size-text-error">
+            @if (formEmpleadoInterno.get('email')?.invalid && formEmpleadoInterno.get('email')?.touched) {
+              @if (formEmpleadoInterno.get('email')?.errors?.['required']) {
+              Campo requerido.
+              }
+              @if (formEmpleadoInterno.get('email')?.errors?.['invalidEmail']) {
+              Formato  inválido.
+              }
+            }
+          </div>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-md-3">
+          <label for="usuario" class="form-label">Usuario</label>
+          <input type="text" class="form-control" formControlName="usuario" id="usuario" required>
+          <div class="text-danger size-text-error">
+            @if (formEmpleadoInterno.get('usuario')?.invalid && formEmpleadoInterno.get('usuario')?.touched) {
+              @if (formEmpleadoInterno.get('usuario')?.errors?.['required']) {
+              Campo requerido.
+              }
+              @if (formEmpleadoInterno.get('usuario')?.errors?.['min']) {
+              Campo requerido.
+              }
+            }
+          </div>
+        </div>
+        <div class="col-md-3 mt-2 mt-lg-0">
+          <label for="rol" class="form-label">Rol</label>
+          <select class="form-select" formControlName="rol" id="rol">
+            <option value="0">Seleccionar</option>
+            @for(item of listaPuesto;track item.id){
+            <option [value]="item.id">{{item.descripcion}}</option>
+            }
+          </select>
+          <div class="text-danger size-text-error">
+            @if (formEmpleadoInterno.get('rol')?.invalid && formEmpleadoInterno.get('rol')?.touched) {
+              @if (formEmpleadoInterno.get('rol')?.errors?.['required']) {
+             Campo requerido.
+              }
+              @if (formEmpleadoInterno.get('rol')?.errors?.['zeroValue']) {
+              Campo requerido.
+              }
+            }
+          </div>
+        </div>
+        <div class="col-md-3 mt-2 mt-lg-0">
+          <label for="area" class="form-label">Area</label>
+          <select class="form-select" formControlName="area" id="area">
+            <option value="0">Seleccionar</option>
+            @for(item of listaDepto;track item.id){
+            <option [value]="item.id">{{item.nombre}}</option>
+            }
+          </select>
+          <div class="text-danger size-text-error">
+            @if (formEmpleadoInterno.get('area')?.invalid && formEmpleadoInterno.get('area')?.touched) {
+              @if (formEmpleadoInterno.get('area')?.errors?.['required']) {
+             Campo requerido.
+              }
+              @if (formEmpleadoInterno.get('area')?.errors?.['zeroValue']) {
+               Campo requerido.
+              }
+            }
+          </div>
+        </div>
+        <div class="col-md-2">
+          @if(showBtnUpdate==true){
+          <button type="submit" (click)="submmit()" 
+            class="btn-custom margin_tp__10">Registrar</button>
+          }@else{
+          <button type="submit" (click)="submmitUpdate()" class="btn-custom margin_tp__10">Actualizar</button>
+          }
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<mat-card class="main-card" style="margin-top: 10px;">
+  <mat-card-content>
+    <!--  <button mat-raised-button color="primary" (click)="openDialog('0ms', '0ms')">Agregar Nuevo Empleado</button> -->
+    <div class="scroll-lista">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Usuario</th>
+            <th scope="col">Correo</th>
+            <th scope="col">Rol</th>
+            <th scope="col">Area</th>
+            <th scope="col">Guardar/Eliminar</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (empleado of listaEmpleadoFilters; track empleado.id;let i = $index) {
+          <tr>
+            <td>{{ empleado.id }}</td>
+            <td>{{ empleado.nombre }}</td>
+            <td>{{ empleado.usuario}}</td>
+            <td>{{ empleado.correo }}</td>
+            <td>{{ findNombrePuesto(empleado.puestoId) }}</td>
+            <td>{{ findNombreArea(empleado.departamentoId)}}</td>
+            <td>
+              <button class="btn btn-light" (click)="update(empleado)">
+                <fa-icon [icon]="['fas', 'edit']"></fa-icon>
+              </button>
+              <button class="btn btn-light" (click)="deleteEmpleado(empleado.id,i)">
+                <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+              </button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="d-flex justify-content-between p-2">
+      <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+        (pageChange)="refreshCountries()">
+      </ngb-pagination>
+
+      <select class="form-select" style="width: auto" [(ngModel)]="pageSize" (ngModelChange)="refreshCountries()">
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="20">20</option>
+        <option [ngValue]="50">50</option>
+        <option [ngValue]="100">100</option>
+      </select>
+    </div>
+  </mat-card-content>
+</mat-card>

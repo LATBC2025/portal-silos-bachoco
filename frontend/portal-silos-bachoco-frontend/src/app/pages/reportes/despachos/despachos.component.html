@@ -1,0 +1,117 @@
+<div class="container-home">
+  <app-header class="fade-in component-header"></app-header>
+</div>
+<mat-card class="main-card">
+    <mat-card-content>
+        <div class="card-header">
+            <h4 class="mb-0" class="text-title" style="text-align: center;">Reporte de Despachos</h4>
+        </div>
+        <form [formGroup]="formReporteDespacho">
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="bodega" class="form-label text-label">Silo</label>
+                    <select class="form-select" formControlName="bodegaId" id="bodega">
+                        <option value="0">Seleccione</option>
+                        @for(item of listSilo;track item.id){
+                        <option [value]="item.id">{{item.nombre}}</option>
+                        }
+                    </select>
+                    <div class="text-danger size-text-error">
+                        @if (formReporteDespacho.get('bodegaId')?.invalid &&
+                        formReporteDespacho.get('bodegaId')?.touched) {
+                        @if (formReporteDespacho.get('bodegaId')?.errors?.['required']) {
+                        Campo requerido.
+                        }
+                        @if (formReporteDespacho.get('bodegaId')?.errors?.['zeroValue']) {
+                        Campo requerido.
+                        }
+                        }
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                    <input type="date" class="form-control" formControlName="fechaI" id="fechaInicio">
+                    <div class="text-danger size-text-error">
+                        @if (formReporteDespacho.get('fechaI')?.invalid && formReporteDespacho.get('fechaI')?.touched) {
+                        @if (formReporteDespacho.get('fechaI')?.errors?.['required']) {
+                        Campo requerido.
+                        }
+                        }
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="fechaFin" class="form-label">Fecha Fin</label>
+                    <input type="date" class="form-control" formControlName="fechaF" id="fechaFin">
+                    <div class="text-danger size-text-error">
+                        @if (formReporteDespacho.get('fechaF')?.invalid && formReporteDespacho.get('fechaF')?.touched) {
+                        @if (formReporteDespacho.get('fechaF')?.errors?.['required']) {
+                        Campo requerido.
+                        }
+                        @else if (formReporteDespacho.get('fechaF')?.errors?.['rangoFechaInvalido']) {
+                        Campo fecha fin no debe ser menor a fecha inicio.
+                        }
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1">
+                    <button class="btn-custom" (click)="submmit()">Buscar</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="scroll-lista scroll-lista-2">
+            <table class="table table-striped" style="min-width: 2500px;">
+                <thead>
+                    <tr>
+                        <th scope="col">Planta</th>
+                        <th scope="col">Folio</th>
+                        <th scope="col">Fecha embarque</th>
+                        <th scope="col"># Boleta Embarque</th>
+                        <th scope="col">Peso Bruto</th>
+                        <th scope="col">Peso Tara</th>
+                        <th scope="col">Peso Neto</th>
+                        <th scope="col">Humedad</th>
+                        <th scope="col">Chofer</th>
+                        <th scope="col">Tractor</th>
+                        <th scope="col">Jaula</th>
+                        <th scope="col">Linea Transportista</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (despacho of listaReporteDespachoFilter; track despacho.folio) {
+                    <tr>
+                        <td>{{ despacho.bodega}}</td>
+                        <td>{{ despacho.folio }}</td>
+                        <td>{{ despacho.fechaEmbarque }}</td>
+                        <td>{{ despacho.numeroBoleta }}</td>
+                        <td>{{ despacho.pesoBruto }}</td>
+                        <td>{{ despacho.pesoTara }}</td>
+                        <td>{{ despacho.pesoNeto }}</td>
+                        <td>{{ despacho.humedad }}</td>
+                        <td>{{ despacho.chofer }}</td>
+                        <td>{{ despacho.tractor }}</td>
+                        <td>{{ despacho.jaula }}</td>
+                        <td>{{ despacho.lineaTransportista }}</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex justify-content-between p-2">
+            <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                (pageChange)="refreshDespachos()">
+            </ngb-pagination>
+
+            <select class="form-select select-custom" style="width: auto" [(ngModel)]="pageSize"
+                (ngModelChange)="refreshDespachos()">
+                <option [ngValue]="5">5</option>
+                <option [ngValue]="10">10</option>
+                <option [ngValue]="20">20</option>
+                <option [ngValue]="50">50</option>
+                <option [ngValue]="100">100</option>
+            </select>
+        </div>
+    </mat-card-content>
+</mat-card>

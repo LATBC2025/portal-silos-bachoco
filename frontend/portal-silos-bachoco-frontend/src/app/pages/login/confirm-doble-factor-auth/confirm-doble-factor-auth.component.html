@@ -1,0 +1,40 @@
+<div class="card-header text-white">
+    <h2 class="mb-0">DOBLE FACTOR DE AUTENTICACION</h2>
+</div>
+<div class="container-login">
+    <div class="text-info">
+        <p>Ingrese el código de acceso.</p>
+    </div>
+    <form [formGroup]="dobleFactorForm">
+        <div class="contaner__inputs">
+        <div class="code-container" formArrayName="otp">
+            <input #otpInput 
+                *ngFor="let control of otpControls.controls; let i = index" [formControlName]="i"
+                type="text" 
+                class="code-input" 
+                [class.invalid]="control.invalid && control.touched" 
+                maxlength="1"
+                pattern="[0-9]" 
+                inputmode="numeric" 
+                (input)="onInput($event, i)" 
+                (keydown)="onKeydown($event, i)"
+                (paste)="onPaste($event, i)" 
+                (focus)="otpInputs.toArray()[i]?.nativeElement?.select()">
+
+        </div>
+        <div class="text-danger" style="font-size: 0.8em;text-align: center;"
+            *ngIf="otpControls.invalid && (otpControls.dirty || otpControls.touched)">
+            Todos los campos del código OTP son obligatorios.
+        </div>
+        </div>
+
+        <div class="container-botones">
+            <div class="col-md-6">
+                <button type="button" class="btn-custom" mat-dialog-close="true">Cancelar</button>
+            </div>
+            <div class="col-md-6">
+                <button type="submit" class="btn-custom" (click)="onSubmit()">Confirmar</button>
+            </div>
+        </div>
+    </form>
+</div>

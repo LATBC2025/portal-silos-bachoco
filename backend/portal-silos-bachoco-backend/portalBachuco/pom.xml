@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.bachoco</groupId>
+  <artifactId>BachocoSilos</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>portalBachoco</name>
+  <packaging>pom</packaging>
+
+  
+  <modules>
+    <module>core-domain</module>
+    <module>core-application</module>
+    <module>infrastructure</module>
+    <module>web-api</module>
+    <module>app-boot</module>
+  </modules>
+  
+      <properties>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring.boot.version>3.5.4</spring.boot.version>
+    </properties>
+    
+    <dependencyManagement>
+        <dependencies>
+            <!-- Dependencias comunes en versiones que heredarán los módulos hijos -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.30</version>
+                <optional>true</optional>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>3.5.4</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+    <build>
+      <pluginManagement>
+          <plugins>
+              <!-- Plugin para asegurar que los submódulos se construyan en el orden correcto -->
+              <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-compiler-plugin</artifactId>
+                  <version>3.11.0</version>
+                  <configuration>
+                      <source>${java.version}</source>
+                      <target>${java.version}</target>
+                  </configuration>
+              </plugin>
+              <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>3.3.4</version>
+                </plugin>
+          </plugins>
+      </pluginManagement>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>qa</id>
+            <properties>
+                <spring.profiles.active>qa</spring.profiles.active>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <spring.profiles.active>test</spring.profiles.active>
+            </properties>
+        </profile>
+    </profiles>
+</project>

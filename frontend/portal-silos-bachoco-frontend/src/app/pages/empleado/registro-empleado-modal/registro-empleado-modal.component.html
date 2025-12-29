@@ -1,0 +1,54 @@
+
+  <div class="card-header text-white" style="background-color: #3f51b5;height: 45px;display: flex;justify-content: center;align-items: center;">
+    <h2 class="mb-0" style="text-align: center;">EMPLEADO INTERNO</h2>
+  </div>
+    <form style="padding: 20px;">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input type="text" class="form-control" id="nombre" placeholder="Ingrese el nombre" required>
+        </div>
+        <div class="col-md-6">
+          <label for="apellidoP" class="form-label">Apellido Paterno</label>
+          <input type="text" class="form-control" id="apellidoP" placeholder="Ingrese el apellido paterno" required>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="apellidoM" class="form-label">Apellido Materno</label>
+          <input type="text" class="form-control" id="apellidoM" placeholder="Ingrese el apellido materno">
+        </div>
+        <div class="col-md-6">
+          <label for="numEmpleado" class="form-label">Número de Empleado</label>
+          <input type="text" class="form-control" id="numEmpleado" placeholder="Ej. 12345" required>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="email" class="form-label">Correo Electrónico</label>
+          <input type="email" class="form-control" id="email" placeholder="correo@empresa.com" required>
+        </div>
+         <div class="col-md-6">
+          <label for="direcionEmpleado" class="form-label">Direccion</label>
+          <input type="text" class="form-control" id="direcionEmpleado" required>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-md-3 d-flex align-items-center">
+          <div class="form-check mt-1 mt-lg-1">
+            <input class="form-check-input" type="checkbox" id="activo" checked>
+            <label class="form-check-label" for="activo">Activo</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3" style="display: flexd; justify-content: center;align-items: center;">
+        <div class="col-md-6 d-grid">
+          <button type="button" class="btn btn-secondary" mat-dialog-close>Cancelar</button>
+        </div>
+        <div class="col-md-6 d-grid">
+          <button type="submit" class="btn btn-primary" [mat-dialog-close]="true">Registrar</button>
+        </div>
+      </div>
+    </form>

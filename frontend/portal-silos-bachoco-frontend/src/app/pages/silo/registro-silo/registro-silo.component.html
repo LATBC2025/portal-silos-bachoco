@@ -1,0 +1,106 @@
+<div class="container-home">
+  <app-header class="fade-in component-header"></app-header>
+</div>
+<mat-card class="main-card">
+  <mat-card-content>
+    <div class="card shadow">
+      <div class="card-header text-white">
+        <h4 class="mb-0" style="text-align: center;">Gestión de Silos</h4>
+      </div>
+      <div class="card-body card-min">
+        <form [formGroup]="siloForm">
+          <div class="row mb-3">
+            <div class="col-md-3">
+              <label for="silo" class="form-label">Silo</label>
+              <input type="text" formControlName="silo" class="form-control" id="silo">
+              <div *ngIf="getControl('silo').invalid && getControl('silo').touched"
+                class="invalid-feedback d-block size-text-error">
+                <div *ngIf="getControl('silo').errors?.['required']">
+                  Campo requerido.
+                </div>
+                <div *ngIf="getControl('silo').errors?.['pattern']">
+                  Formato inválido.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mt-2 mt-lg-0">
+              <label for="nombre" class="form-label">Nombre</label>
+              <input type="text" formControlName="nombre" class="form-control" id="nombre" required>
+              <div *ngIf="getControl('nombre').invalid && getControl('nombre').touched"
+                class="invalid-feedback d-block size-text-error">
+                <div *ngIf="getControl('nombre').errors?.['required']">
+                  Campo requerido.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-5 mt-2 mt-lg-0">
+              <label for="sociedad" class="form-label">Sociedad</label>
+              <input type="text" formControlName="sociedad" class="form-control" id="sociedad">
+              <div *ngIf="getControl('sociedad').invalid && getControl('sociedad').touched"
+                class="invalid-feedback d-block size-text-error">
+                <div *ngIf="getControl('sociedad').errors?.['required']">
+                  Campo requerido.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2 d-grid mt-3">
+            <label class="form-label"></label>
+            @if(showBtnUpdate==true){
+            <button type="submit" (click)="submmit()" class="btn-custom">Registrar</button>
+            }@else{
+            <button type="submit" (click)="submmitUpdate()" [disabled]="siloForm.invalid"
+              class="btn-custom">Actualizar</button>
+            }
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="contenedor-con-scroll mt-2 mt-lg-2 scroll-lista">
+      <div style="height: auto;">
+        <table class="table table-striped" style="margin-top: 5px;">
+          <thead>
+            <tr>
+              <th scope="col">Id</th>
+              <th scope="col">Silo</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Sociedad</th>
+              <th scope="col">Guardar/Eliminar</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (silo of listaSiloFilter; track silo.id;let i = $index) {
+            <tr>
+              <td>{{ silo.id | number }}</td>
+              <td>{{ silo.silo }}</td>
+              <td>{{ silo.nombre }}</td>
+              <td>{{ silo.sociedad }}</td>
+              <td>
+                <button class="btn btn-light" (click)="update(silo)">
+                  <fa-icon [icon]="['fas', 'pen-to-square']"></fa-icon>
+                </button>
+                <button class="btn btn-light" (click)="deleteSilo(silo.id,i)">
+                  <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+                </button>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="d-flex justify-content-between p-2">
+      <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+        (pageChange)="refreshCountries()">
+      </ngb-pagination>
+
+      <select class="form-select" style="width: auto" [(ngModel)]="pageSize" (ngModelChange)="refreshCountries()">
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="20">20</option>
+        <option [ngValue]="50">50</option>
+        <option [ngValue]="100">100</option>
+      </select>
+    </div>
+  </mat-card-content>
+</mat-card>

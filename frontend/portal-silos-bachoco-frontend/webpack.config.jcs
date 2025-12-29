@@ -1,0 +1,155 @@
+// webpack.config.cjs - COMPATIBLE CON TODOS LOS ENTORNOS
+module.exports = (config, options, context) => {
+  const configuration = options.configuration || 'development';
+  const isProduction = configuration === 'production';
+  const isQA = configuration === 'qa';
+  const isDevelopment = configuration === 'development';
+  
+  console.log(' CONFIGURANDO WEBPACK - MODO ANGULAR 10');
+  console.log(` Entorno: ${configuration.toUpperCase()}`);
+  console.log(' Objetivo: Single bundle sin lazy loading, sin type=module, sin defer');
+
+  // =============================================
+  // 1. CONFIGURACIÓN PARA UN SOLO BUNDLE (TODOS LOS ENTORNOS)
+  // =============================================
+  config.optimization = {
+    ...config.optimization,
+    splitChunks: false,
+    runtimeChunk: false,
+    moduleIds: 'deterministic',
+    chunkIds: 'deterministic'
+  };
+
+  // =============================================
+  // 2. CONFIGURACIÓN DE OUTPUT POR ENTORNO
+  // =============================================
+  config.output = {
+    ...config.output,
+    // Production: con hash para cache
+    // QA: con hash pero diferente patrón
+    // Development: sin hash para debugging
+    filename: isProduction ? '[name].[contenthash].js' : 
+              isQA ? '[name].qa.[contenthash].js' : 
+              '[name].js',
+    
+    chunkFilename: isProduction ? 'chunks/[name].[contenthash].js' : 
+                   isQA ? 'chunks/[name].qa.[contenthash].js' : 
+                   'chunks/[name].js'
+  };
+
+  // =============================================
+  // 3. ELIMINAR CHUNKS NO DESEADOS (TODOS LOS ENTORNOS)
+  // =============================================
+  if (config.entry.polyfills) {
+    console.log(' Combinando polyfills en el bundle principal...');
+    
+    const mainEntry = Array.isArray(config.entry.main) ? config.entry.main : [config.entry.main];
+    const polyfillsEntry = Array.isArray(config.entry.polyfills) ? config.entry.polyfills : [config.entry.polyfills];
+    
+    config.entry.main = [...polyfillsEntry, ...mainEntry];
+    delete config.entry.polyfills;
+  }
+
+  // Eliminar otros entries que puedan causar conflictos
+  ['runtime', 'vendor', 'common', 'polyfills'].forEach(entry => {
+    if (config.entry[entry]) {
+      console.log(` Eliminando entry: ${entry}`);
+      delete config.entry[entry];
+    }
+  });
+
+  // =============================================
+  // 4. PLUGIN PARA MODIFICAR HTML - TODOS LOS ENTORNOS
+  // =============================================
+  config.plugins.push({
+    apply: (compiler) => {
+      compiler.hooks.emit.tapAsync('LegacyAngularBuild', (compilation, callback) => {
+        console.log(` Procesando HTML para ${configuration.toUpperCase()}...`);
+        
+        const htmlFiles = Object.keys(compilation.assets).filter(name => name.endsWith('.html'));
+        
+        htmlFiles.forEach(htmlFile => {
+          let source = compilation.assets[htmlFile].source();
+          if (Buffer.isBuffer(source)) source = source.toString();
+          
+          console.log(` Procesando: ${htmlFile}`);
+          
+          // TRANSFORMACIÓN COMPLETA DEL HTML
+          source = source
+            // Remover atributos de módulos ES
+            .replace(/type="module"/g, '')
+            .replace(/defer="?"/g, '')
+            .replace(/crossorigin="?"/g, '')
+            .replace(/ nomodule/g, '')
+            
+            // Remover TODOS los scripts excepto main
+            .replace(/<script[^>]*(?<!main)\.[^>]*><\/script>/g, '')
+            .replace(/<script[^>]*\b(chunk|runtime|polyfills|vendor)[^>]*><\/script>/g, '')
+            
+            // Limpiar atributos
+            .replace(/<script[^>]*\b(type|defer|crossorigin|nomodule)=["'][^"']*["']/g, '')
+            .replace(/<script\s+>/g, '<script>');
+
+          compilation.assets[htmlFile] = {
+            source: () => source,
+            size: () => source.length
+          };
+        });
+        
+        callback();
+      });
+
+      // Verificación final por entorno
+      compiler.hooks.done.tap('BuildComplete', (stats) => {
+        const statsJson = stats.toJson();
+        const jsFiles = statsJson.assets.filter(asset => asset.name.endsWith('.js'));
+        const cssFiles = statsJson.assets.filter(asset => asset.name.endsWith('.css'));
+        
+        console.log(`\n BUILD ${configuration.toUpperCase()} COMPLETADO!`);
+        console.log('=====================================');
+        console.log(` Archivos JS generados: ${jsFiles.length}`);
+        
+        jsFiles.forEach(file => {
+          const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+          console.log(`   - ${file.name} (${sizeMB} MB)`);
+        });
+        
+        console.log(` Archivos CSS generados: ${cssFiles.length}`);
+        cssFiles.forEach(file => {
+          const sizeKB = (file.size / 1024).toFixed(2);
+          console.log(`   - ${file.name} (${sizeKB} KB)`);
+        });
+        
+        if (jsFiles.length === 1) {
+          console.log(' ¡ÉXITO! Solo un archivo JS principal');
+        } else {
+          console.log('  Se generaron múltiples archivos JS');
+        }
+        
+        console.log(`  Entorno: ${configuration}`);
+        console.log('=====================================\n');
+      });
+    }
+  });
+
+  // =============================================
+  // 5. CONFIGURACIONES ESPECÍFICAS POR ENTORNO
+  // =============================================
+  if (isDevelopment) {
+    console.log(' Configuraciones adicionales para DEVELOPMENT');
+    // Desarrollo: mantener source maps, sin minificación extrema
+  }
+  
+  if (isQA) {
+    console.log(' Configuraciones adicionales para QA');
+    // QA: source maps, pero con hashing para cache
+  }
+  
+  if (isProduction) {
+    console.log(' Configuraciones adicionales para PRODUCTION');
+    // Production: máxima optimización
+  }
+
+  console.log(`✅ CONFIGURACIÓN COMPLETADA para ${configuration.toUpperCase()}`);
+  return config;
+};

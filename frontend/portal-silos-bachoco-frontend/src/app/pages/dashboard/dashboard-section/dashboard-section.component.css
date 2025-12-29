@@ -1,0 +1,7 @@
+  :host {
+      display: block;
+    }
+
+    .section__content {
+      overflow-x: auto;
+    }
