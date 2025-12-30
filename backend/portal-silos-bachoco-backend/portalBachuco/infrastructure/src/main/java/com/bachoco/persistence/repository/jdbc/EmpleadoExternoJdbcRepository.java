@@ -74,6 +74,46 @@ public class EmpleadoExternoJdbcRepository {
         });
 	}
 	
+	public List<EmpleadoExternoResponse> findAllBySilo(Integer siloId) {
+	    String sql = """
+	         SELECT
+	            e.EMPLEADO_ID,
+	            e.NOMBRE,
+	            e.CORREO,
+	            e.TIPO_EMPLEADO,
+	            ex.RFC,
+	            ex.TC_SILO_ID
+	         FROM tc_empleado e
+	         JOIN tc_empleado_externo ex ON e.EMPLEADO_ID = ex.TC_EMPLEADO_ID
+	         JOIN tc_usuario u ON e.TC_USUARIO_ID = u.USUARIO_ID
+	         WHERE e.TIPO_EMPLEADO = 2
+	           AND (u.USUARIO_TIPO = 2 OR u.USUARIO_TIPO = 3)
+	           AND e.ESTATUS = '1'
+	           AND ex.TC_SILO_ID = ?
+	         GROUP BY
+	            e.EMPLEADO_ID,
+	            e.NOMBRE,
+	            e.CORREO,
+	            e.TIPO_EMPLEADO,
+	            ex.RFC,
+	            ex.TC_SILO_ID
+	        """;
+
+	    return jdbcTemplate.query(sql, new Object[]{siloId}, new RowMapper<EmpleadoExternoResponse>() {
+	        @Override
+	        public EmpleadoExternoResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
+	            EmpleadoExternoResponse p = new EmpleadoExternoResponse();
+	            p.setId(rs.getInt("EMPLEADO_ID"));
+	            p.setNombre(rs.getString("NOMBRE"));
+	            p.setRfc(rs.getString("RFC"));
+	            p.setCorreo(rs.getString("CORREO"));
+	            p.setSiloId(rs.getInt("TC_SILO_ID"));
+	            return p;
+	        }
+	    });
+	}
+
+	
 	public EmpleadoExternoResponse findByCorreo(String correo){
 		String sql = """
 				    SELECT

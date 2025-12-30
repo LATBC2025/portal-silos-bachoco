@@ -50,6 +50,11 @@ public class EmpleadoExternoUseCase {
 		return this.empExternoRepositoryPort.findAll();
 	}
 	
+	public List<EmpleadoExternoResponse> findAllBySilo(Integer siloId){ // Se agrega para cambio nuevo que filtra por SILO
+	    return this.empExternoRepositoryPort.findAllBySilo(siloId);
+	}
+
+	
 	public void delete(Integer id) {
 		this.empExternoRepositoryPort.delete(id);
 	}

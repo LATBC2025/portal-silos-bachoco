@@ -11,6 +11,7 @@ public interface EmpleadoExternoRepositoryPort {
 	public Optional<EmpleadoExternoResponse> save(EmpleadoExternoRequest req);
 	public Optional<EmpleadoExternoResponse> findByCorreo(String correo);
 	public List<EmpleadoExternoResponse> findAll();
+	List<EmpleadoExternoResponse> findAllBySilo(Integer siloId);
 	public void update(Integer id,EmpleadoExternoRequest req);
 	void delete(Integer id);
 	public List<Integer> findAllIdEmpleadoBaja();

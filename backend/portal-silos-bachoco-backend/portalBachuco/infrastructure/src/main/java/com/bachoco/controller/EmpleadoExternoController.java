@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bachoco.model.EmpleadoExternoRequest;
 import com.bachoco.model.EmpleadoExternoResponse;
 import com.bachoco.service.usecase.EmpleadoExternoUseCase;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/v1/empleado-externo")
@@ -43,6 +45,13 @@ public class EmpleadoExternoController {
 		List<EmpleadoExternoResponse> response=this.empleadoExternoUseCase.findAll();
 		return ResponseEntity.ok(response);
 	}
+	
+	@GetMapping("/filter-silo")
+	public ResponseEntity<List<EmpleadoExternoResponse>> findAllBySilo(@RequestParam Integer siloId){
+	    List<EmpleadoExternoResponse> response = this.empleadoExternoUseCase.findAllBySilo(siloId);
+	    return ResponseEntity.ok(response);
+	}
+
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Integer id){

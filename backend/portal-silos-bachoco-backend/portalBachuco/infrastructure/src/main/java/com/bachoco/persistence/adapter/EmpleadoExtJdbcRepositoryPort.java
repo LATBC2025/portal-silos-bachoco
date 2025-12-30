@@ -48,6 +48,17 @@ public class EmpleadoExtJdbcRepositoryPort implements EmpleadoExternoRepositoryP
 		}
 		return null;
 	}
+	
+	@Override
+	public List<EmpleadoExternoResponse> findAllBySilo(Integer siloId) {
+	    try {
+	        return this.empleadoExternoRepository.findAllBySilo(siloId);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return List.of(); // mejor que null
+	    }
+	}
+
 
 	@Override
 	public Optional<EmpleadoExternoResponse> findByCorreo(String correo) {
