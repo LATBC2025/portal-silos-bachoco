@@ -73,7 +73,7 @@
                 Campo requerido.
               }
               @if (formEmpleadoExterno.get('sapVendor')?.errors?.['maxlength']) {
-                Máx. 20 caracteres.
+                Máx. 30 caracteres.
               }
               @if (formEmpleadoExterno.get('sapVendor')?.errors?.['pattern']) {
                 Formato inválido.
@@ -102,6 +102,25 @@
                 }
               </div>
             </div>
+            <div class="col-md-6">
+              <label for="bodegas" class="form-label">Bodegas</label>
+
+              <select class="form-select" formControlName="bodegasIds" id="bodegas" multiple
+                      [disabled]="listBodegas.length === 0">
+                @for(item of listBodegas; track item.id){
+                  <option [ngValue]="item.id">{{item.nombre}}</option>
+                }
+              </select>
+
+              <div class="text-danger size-text-error">
+                @if (formEmpleadoExterno.get('bodegasIds')?.invalid && formEmpleadoExterno.get('bodegasIds')?.touched) {
+                  Campo requerido.
+                }
+              </div>
+
+              <small class="text-muted">Puedes seleccionar más de una bodega.</small>
+            </div>
+
             <div class="col-md-2 d-grid">
               @if(showBtnUpdate==true){
               <button type="submit" (click)="submmit()" class="btn-custom marg_top_" style="width: 150px;">Registrar</button>

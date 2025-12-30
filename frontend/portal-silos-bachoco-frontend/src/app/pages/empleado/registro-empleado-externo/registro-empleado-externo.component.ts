@@ -21,6 +21,9 @@ import Swal, { SweetAlertResult } from 'sweetalert2';
 import { customEmailValidator } from '../../../services/shared/validators/email.validator';
 import { notZeroStringValidator } from '../../../services/shared/validators/not-zero-string.validator';
 import { UtilsService } from '../../../services/shared/utils.service';
+import { BodegaServiceService } from '../../../services/catalog/bodega-service.service';
+import { BodegaResponse } from '../../../models/catalogs/bodega/Bodega.Response';
+
 
 @Component({
   selector: 'app-registro-empleado-externo',
@@ -54,6 +57,7 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
   listaEmpleadoExternoFilters: EmpleadoExternoResponseDTO[] = [];
   formEmpleadoExterno!: FormGroup;
   listSilo: SiloResponse[] = [];
+  listBodegas: BodegaResponse[] = []; // nuevo atributo
   showBtnUpdate: boolean = true;
   updateId: number = -1;
 
@@ -62,13 +66,28 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
     private library: FaIconLibrary,
     private siloService: SiloServiceService,
     private utilServ: UtilsService,
-    private cdr: ChangeDetectorRef) {
+    private cdr: ChangeDetectorRef,
+  private bodegaService: BodegaServiceService
+) {
     this.library.addIconPacks(fas);
   }
   ngOnInit(): void {
     this.getSilos();
     this.initForm();
     this.findAllEmpExterno();
+    //Inicia lógica para cargar informacion de bodegas por silo
+    this.formEmpleadoExterno.get('siloId')?.valueChanges.subscribe((val) => {
+      const siloId = Number(val);
+
+      if (!siloId || siloId === 0) {
+        this.listBodegas = [];
+        this.formEmpleadoExterno.patchValue({ bodegasIds: [] });
+        return;
+      }
+
+      this.loadBodegasBySilo(siloId);
+});
+
   }
 
   initForm() {
@@ -77,13 +96,17 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
       rfc: new FormControl('', [Validators.required,Validators.pattern(/^[A-ZÑ&]{3,4}\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[A-Z\d]{2}[A-Z0-9]$/)]),
       correo: new FormControl('', [Validators.required, Validators.min(1), customEmailValidator()]),
       siloId: new FormControl('0', [Validators.required, notZeroStringValidator()]),
-      //  NUEVO CAMPO
+      //  NUEVOS CAMPOS
     sapVendor: new FormControl('', [
       Validators.required,
       Validators.maxLength(30),
-      Validators.pattern(/^[A-Za-z0-9-]+$/)])
+      Validators.pattern(/^[A-Za-z0-9-]+$/)]),
+      bodegasIds: new FormControl([], [Validators.required]),
+
     });
   }
+
+
   getControl(key: string): FormControl {
     return (this.formEmpleadoExterno.get(key) as FormControl);
   }
@@ -115,9 +138,16 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
   }
 
   toRequest(): EmpleadoExternoRequest {
+      const bodegasIds = (this.formEmpleadoExterno.get('bodegasIds')?.value ?? []) as number[];
+
+
     return new EmpleadoExternoRequest(this.getValue('nombre'), this.getValue('rfc'), this.getValue('correo'),
       '', this.getValueNumber('siloId'),
-    this.getValue('sapVendor') )//  nuevo);
+       this.getValue('sapVendor'),//  nuevo
+       bodegasIds //  nuevo
+  )
+
+
   }
 
   extractNameSilo(siloId: number): string {
@@ -152,7 +182,8 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
       rfc: '',
       correo: '',
       siloId: '0',
-      sapVendor: '' // nuevo
+      sapVendor: '', // nuevo
+      bodegasIds: [] // nuevo
     });
     this.utilServ.resetFormGroupState(this.formEmpleadoExterno);
   }
@@ -217,7 +248,26 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
       rfc: item.rfc,
       correo: item.correo,
       siloId: item.siloId,
-       sapVendor: (item as any).sapVendor ?? '', // temporal
+      sapVendor: (item as any).sapVendor ?? '', // temporal
+      bodegasIds: [] // por ahora
     });
   }
+
+  loadBodegasBySilo(siloId: number) {
+  this.bodegaService.findAllBySilo(siloId).subscribe({
+    next: (response: BodegaResponse[]) => {
+      this.listBodegas = response ?? [];
+      // resetea selección al cambiar silo
+      this.formEmpleadoExterno.patchValue({ bodegasIds: [] });
+      this.cdr.detectChanges();
+    },
+    error: (error) => {
+      this.utilServ.showMessageError("Hubo un error en la carga de bodegas");
+      console.log("ERROR DATA BODEGAS: " + JSON.stringify(error));
+      this.listBodegas = [];
+      this.formEmpleadoExterno.patchValue({ bodegasIds: [] });
+    }
+  });
+}
+
 }
