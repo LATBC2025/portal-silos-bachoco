@@ -198,7 +198,7 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
         }
       });
     }else{
-      
+
       this.utilServ.markAllControlsAsTouched(this.formEmpleadoExterno);
     }
   }
