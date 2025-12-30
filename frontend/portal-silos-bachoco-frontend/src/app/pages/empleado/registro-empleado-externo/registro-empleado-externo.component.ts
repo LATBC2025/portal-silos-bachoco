@@ -76,7 +76,12 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
       nombre: new FormControl('', [Validators.required,Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/)]),
       rfc: new FormControl('', [Validators.required,Validators.pattern(/^[A-ZÑ&]{3,4}\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[A-Z\d]{2}[A-Z0-9]$/)]),
       correo: new FormControl('', [Validators.required, Validators.min(1), customEmailValidator()]),
-      siloId: new FormControl('0', [Validators.required, notZeroStringValidator()])
+      siloId: new FormControl('0', [Validators.required, notZeroStringValidator()]),
+      //  NUEVO CAMPO
+    sapVendor: new FormControl('', [
+      Validators.required,
+      Validators.maxLength(30),
+      Validators.pattern(/^[A-Za-z0-9-]+$/)])
     });
   }
   getControl(key: string): FormControl {
@@ -111,7 +116,8 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
 
   toRequest(): EmpleadoExternoRequest {
     return new EmpleadoExternoRequest(this.getValue('nombre'), this.getValue('rfc'), this.getValue('correo'),
-      '', this.getValueNumber('siloId'));
+      '', this.getValueNumber('siloId'),
+    this.getValue('sapVendor') )//  nuevo);
   }
 
   extractNameSilo(siloId: number): string {
@@ -145,7 +151,8 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
       nombre: '',
       rfc: '',
       correo: '',
-      siloId: '0'
+      siloId: '0',
+      sapVendor: '' // nuevo
     });
     this.utilServ.resetFormGroupState(this.formEmpleadoExterno);
   }
@@ -209,7 +216,8 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
       nombre: item.nombre,
       rfc: item.rfc,
       correo: item.correo,
-      siloId: item.siloId
+      siloId: item.siloId,
+       sapVendor: (item as any).sapVendor ?? '', // temporal
     });
   }
 }

@@ -40,7 +40,7 @@
                 }
               </div>
             </div>
-            <div class="col-md-6 mt-3 mt-lg-0">
+            <div class="col-md-4 mt-3 mt-lg-0">
               <label for="email" class="form-label">Correo Electrónico</label>
               <input type="email" class="form-control" formControlName="correo" id="email"
                 placeholder="correo@empresa.com" required>
@@ -56,6 +56,31 @@
               </div>
             </div>
           </div>
+          <div class="col-md-2 mt-3 mt-lg-0">
+          <label for="sapVendor" class="form-label">Proveedor SAP</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="sapVendor"
+            id="sapVendor"
+            placeholder="Ej. 00012345"
+            maxlength="20"
+            required
+          />
+          <div class="text-danger size-text-error">
+            @if (formEmpleadoExterno.get('sapVendor')?.invalid && formEmpleadoExterno.get('sapVendor')?.touched) {
+              @if (formEmpleadoExterno.get('sapVendor')?.errors?.['required']) {
+                Campo requerido.
+              }
+              @if (formEmpleadoExterno.get('sapVendor')?.errors?.['maxlength']) {
+                Máx. 20 caracteres.
+              }
+              @if (formEmpleadoExterno.get('sapVendor')?.errors?.['pattern']) {
+                Formato inválido.
+              }
+            }
+          </div>
+        </div>
 
           <div class="row mb-3">
             <div class="col-md-4">
