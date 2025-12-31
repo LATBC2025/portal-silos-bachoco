@@ -7,82 +7,104 @@
       <h4 class="mb-0" class="text-title" style="text-align: center;">Programación de arribos</h4>
     </div>
     <div class="card-body card-min">
-      <form [formGroup]="formArriboFilter">
-        <div class="row mb-3">
-          <div class="col-md-3">
-            <label for="silo" class="form-label">Silo</label>
-            <select class="form-select" formControlName="silo" id="silo">
-              <option value="0">Seleccionar</option>
-              @for(item of listSilo;track item.id){
-              <option [value]="item.id">{{item.nombre}}</option>
-              }
-            </select>
-            <div class="text-danger size-text-error">
-              @if (formArriboFilter.get('silo')?.invalid && formArriboFilter.get('silo')?.touched) {
+      <form [formGroup]="formArriboFilter"  (ngSubmit)="findStock()">
 
-              @if (formArriboFilter.get('silo')?.errors?.['required']) {
-              Campo requerido.
-              }
+  <!-- ===================== -->
+  <!-- FILA 1: SILO + PROVEEDOR -->
+  <!-- ===================== -->
+  <div class="row mb-3">
 
-              @if (formArriboFilter.get('silo')?.errors?.['zeroValue']) {
-              Campo requerido.
-              }
-              }
-            </div>
-          </div>
-          <div class="col-md-3">
-            <label for="planta" class="form-label">Planta</label>
-            <select class="form-select" formControlName="planta" id="planta">
-              <option value="0">Seleccionar</option>
-              @for(item of listPlantas;track item.id){
-              <option [value]="item.id">{{item.nombre}}</option>
-              }
-            </select>
-            <div class="text-danger size-text-error">
-              @if (formArriboFilter.get('planta')?.invalid && formArriboFilter.get('planta')?.touched) {
+    <!-- SILO -->
+    <div class="col-md-6">
+      <label for="silo" class="form-label">Silo</label>
+      <select class="form-select" formControlName="silo" id="silo">
+        <option [ngValue]="0">Seleccionar</option>
+        @for(item of listSilo; track item.id){
+          <option [value]="item.id">{{item.nombre}}</option>
+        }
+      </select>
 
-              @if (formArriboFilter.get('planta')?.errors?.['required']) {
-              Campo requerido.
-              }
+      <div class="text-danger size-text-error">
+        @if (formArriboFilter.get('silo')?.invalid && formArriboFilter.get('silo')?.touched) {
+          @if (formArriboFilter.get('silo')?.errors?.['required']) { Campo requerido. }
+          @if (formArriboFilter.get('silo')?.errors?.['zeroValue']) { Campo requerido. }
+        }
+      </div>
+    </div>
 
-              @if (formArriboFilter.get('planta')?.errors?.['zeroValue']) {
-              Campo requerido.
-              }
-              }
-            </div>
-          </div>
-          <div class="col-md-3">
-            <label for="material" class="form-label">Material</label>
-            <select class="form-select" formControlName="material" id="material">
-              <option value="0">Seleccionar</option>
-              @for(item of listMateriales;track item.id){
-              <option [value]="item.id">{{item.descripcion}}</option>
-              }
-            </select>
-            <div class="text-danger size-text-error">
-              @if (formArriboFilter.get('material')?.invalid && formArriboFilter.get('material')?.touched) {
+    <!-- PROVEEDOR -->
+    <div class="col-md-6">
+      <label for="proveedor" class="form-label">Proveedor</label>
+      <select class="form-select" formControlName="proveedor" id="proveedor">
+        <option [ngValue]="0">Seleccionar</option>
+        @for(p of listProveedores; track p.id){
+          <option [ngValue]="p.id">{{ p.nombre }}</option>
+        }
+      </select>
 
-              @if (formArriboFilter.get('material')?.errors?.['required']) {
-              Campo requerido.
-              }
+      <!-- Reserva espacio para errores -->
+      <div class="text-danger size-text-error">&nbsp;</div>
+    </div>
 
-              @if (formArriboFilter.get('material')?.errors?.['zeroValue']) {
-              Campo requerido.
-              }
-              }
-            </div>
-          </div>
-          <div class="col-md-2 mb-3">
-            <button type="submit" class="btn-custom" (click)="findStock()">Buscar</button>
-          </div>
-        </div>
-        <!--         <div class="row mb-3">
-          <div class="col-md-2 mb-3">
-            <button type="submit" class="btn-custom" (click)="findStock()">Buscar</button>
-          </div>
-        </div> -->
+  </div>
 
-      </form>
+  <!-- ===================== -->
+  <!-- FILA 2: PLANTA + MATERIAL -->
+  <!-- ===================== -->
+  <div class="row mb-3">
+
+    <!-- PLANTA -->
+    <div class="col-md-6">
+      <label for="planta" class="form-label">Planta</label>
+      <select class="form-select" formControlName="planta" id="planta">
+        <option [ngValue]="0">Seleccionar</option>
+        @for(item of listPlantas; track item.id){
+          <option [ngValue]="item.id">{{item.nombre}}</option>
+        }
+      </select>
+
+      <div class="text-danger size-text-error">
+        @if (formArriboFilter.get('planta')?.invalid && formArriboFilter.get('planta')?.touched) {
+          @if (formArriboFilter.get('planta')?.errors?.['required']) { Campo requerido. }
+          @if (formArriboFilter.get('planta')?.errors?.['zeroValue']) { Campo requerido. }
+        }
+      </div>
+    </div>
+
+    <!-- MATERIAL -->
+    <div class="col-md-6">
+      <label for="material" class="form-label">Material</label>
+      <select class="form-select" formControlName="material" id="material">
+        <option [ngValue]="0">Seleccionar</option>
+        @for(item of listMateriales; track item.id){
+          <option [ngValue]="item.id">{{item.descripcion}}</option>
+        }
+      </select>
+
+      <div class="text-danger size-text-error">
+        @if (formArriboFilter.get('material')?.invalid && formArriboFilter.get('material')?.touched) {
+          @if (formArriboFilter.get('material')?.errors?.['required']) { Campo requerido. }
+          @if (formArriboFilter.get('material')?.errors?.['zeroValue']) { Campo requerido. }
+        }
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===================== -->
+  <!-- FILA 3: BOTÓN BUSCAR -->
+  <!-- ===================== -->
+  <div class="row mb-3">
+    <div class="col-md-12 d-flex justify-content-end">
+      <button type="submit" class="btn-custom px-4">
+        Buscar
+      </button>
+    </div>
+  </div>
+
+</form>
+
+
     </div>
     <div class="text-section row mb-3">
       <div class="col-md-3">
@@ -182,9 +204,9 @@
                 </td>
                 <td>
                   <select class="form-select" formControlName="material" id="material" [disabled]="true">
-                    <option value="0">Seleccionar</option>
+                    <option [ngValue]="0">Seleccionar</option>
                     @for(item of listMateriales;track item.id){
-                    <option [value]="item.id">{{item.descripcion}}</option>
+                    <option [ngValue]="item.id">{{item.descripcion}}</option>
                     }
                   </select>
                   <div class="text-danger" style="font-size: 0.9em;">

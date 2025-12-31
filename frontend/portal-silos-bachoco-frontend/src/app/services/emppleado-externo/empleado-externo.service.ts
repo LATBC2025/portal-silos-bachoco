@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient , HttpParams} from '@angular/common/http';
 import { EmpleadoExternoRequest } from '../../models/catalogs/Empleado-externo/Empleado.Externo.Request';
 import { EmpleadoExternoResponseDTO } from '../../models/catalogs/Empleado-externo/Empleado.Response.DTO';
 import { Observable } from 'rxjs';
+
 
 
 @Injectable({
@@ -26,6 +27,17 @@ export class EmpleadoExternoService {
   findAll(): Observable<EmpleadoExternoResponseDTO[]> {
     return this.http.get<EmpleadoExternoResponseDTO[]>(`${this.apiUrl}/empleado-externo`);
   }
+
+  // FILTRO NUEVO
+  findAllBySilo(siloId: number): Observable<EmpleadoExternoResponseDTO[]> {
+  let params = new HttpParams();
+  params = params.set('siloId', siloId);
+
+  return this.http.get<EmpleadoExternoResponseDTO[]>(
+    `${this.apiUrl}/empleado-externo/filter-silo`,
+    { params }
+  );
+}
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/empleado-externo/${id}`);
