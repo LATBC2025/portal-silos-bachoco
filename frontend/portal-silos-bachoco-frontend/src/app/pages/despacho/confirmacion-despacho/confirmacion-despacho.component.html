@@ -8,62 +8,129 @@
         </div>
         <h4 class="text-formulario">Formulario</h4>
         <form [formGroup]="formFilter">
+
+            <!-- ===================== -->
+            <!-- FILA 1: SILO + PROVEEDOR + MATERIAL -->
+            <!-- ===================== -->
             <div class="row mb-3">
-                <div class="col-md-4">
-                    <label for="silo" class="form-label text-label">Silo</label>
-                    <select class="form-select" [(ngModel)]="opcionSeleccionada" (change)="onSeleccionar($event)"
-                        formControlName="siloId" id="tipoMaiz">
-                        <option value="0">Seleccionar</option>
-                        @for(item of listSilo;track item.id){
-                        <option [value]="item.id">{{item.nombre}}</option>
-                        }
-                    </select>
-                    <div class="text-danger" style="font-size: 0.9em;">
-                        @if (formFilter.get('siloId')?.invalid && formFilter.get('siloId')?.touched) {
-                        @if (formFilter.get('siloId')?.errors?.['required']) {
-                        Campo requerido.
-                        }
-                        @if (formFilter.get('siloId')?.errors?.['zeroValue']) {
-                        Campo requerido.
-                        }
-                        }
-                    </div>
+
+              <!-- SILO -->
+              <div class="col-md-4">
+                <label for="siloId" class="form-label text-label">Silo</label>
+                <select
+                  class="form-select"
+                  (change)="onSeleccionar($event)"
+                  formControlName="siloId"
+                  id="siloId"
+                >
+                  <option value="0">Seleccionar</option>
+                  @for(item of listSilo; track item.id){
+                    <option [value]="item.id">{{ item.nombre }}</option>
+                  }
+                </select>
+
+                <div class="text-danger" style="font-size: 0.9em;">
+                  @if (formFilter.get('siloId')?.invalid && formFilter.get('siloId')?.touched) {
+                    @if (formFilter.get('siloId')?.errors?.['required']) { Campo requerido. }
+                    @if (formFilter.get('siloId')?.errors?.['zeroValue']) { Campo requerido. }
+                  }
                 </div>
-                <div class="col-md-3">
-                    <label for="tipoMaiz" class="form-label">Material</label>
-                    <select class="form-select" (change)="onSeleccionarMaterial($event)" formControlName="materialId"
-                        id="tipoMaiz">
-                        <option value="0">Seleccionar</option>
-                        @for(item of listMateriales;track item.id){
-                        <option [value]="item.id">{{item.descripcion}}</option>
-                        }
-                    </select>
-                    <div class="text-danger">
-                        @if (formFilter.get('materialId')?.invalid && formFilter.get('materialId')?.touched) {
-                        @if (formFilter.get('materialId')?.errors?.['required']) {
-                        Campo requerido.
-                        }
-                        @if (formFilter.get('materialId')?.errors?.['zeroValue']) {
-                        Campo requerido.
-                        }
-                        }
-                    </div>
+              </div>
+
+              <!-- PROVEEDOR -->
+              <div class="col-md-4">
+                <label for="proveedorId" class="form-label text-label">Proveedor</label>
+                <select
+                  class="form-select form-select-sm"
+                  formControlName="proveedorId"
+                  id="proveedorId"
+                >
+                  <option value="0">Seleccionar</option>
+                  @for(p of listProveedores; track p.id){
+                    <option [value]="p.id">{{ p.nombre }}</option>
+                  }
+                </select>
+
+                <div class="text-danger" style="font-size: 0.9em;">
+                  @if (formFilter.get('proveedorId')?.invalid && formFilter.get('proveedorId')?.touched) {
+                    @if (formFilter.get('proveedorId')?.errors?.['required']) { Campo requerido. }
+                    @if (formFilter.get('proveedorId')?.errors?.['zeroValue']) { Campo requerido. }
+                  }
                 </div>
-                <div class="col-md-2 mb-5">
-                    <label for="fechaInicio" class="form-label">Fecha inicio</label>
-                    <input type="date" formControlName="fechaI" class="form-control" id="fechaInicio">
+              </div>
+
+              <!-- MATERIAL -->
+              <div class="col-md-4">
+                <label for="materialId" class="form-label">Material</label>
+                <select
+                  class="form-select"
+                  (change)="onSeleccionarMaterial($event)"
+                  formControlName="materialId"
+                  id="materialId"
+                >
+                  <option value="0">Seleccionar</option>
+                  @for(item of listMateriales; track item.id){
+                    <option [value]="item.id">{{ item.descripcion }}</option>
+                  }
+                </select>
+
+                <div class="text-danger" style="font-size: 0.9em;">
+                  @if (formFilter.get('materialId')?.invalid && formFilter.get('materialId')?.touched) {
+                    @if (formFilter.get('materialId')?.errors?.['required']) { Campo requerido. }
+                    @if (formFilter.get('materialId')?.errors?.['zeroValue']) { Campo requerido. }
+                  }
                 </div>
-                <div class="col-md-2 mb-5">
-                    <label for="fechaFin" class="form-label">Fecha fin</label>
-                    <input type="date" formControlName="fechaF" class="form-control" id="fechaFin">
-                </div>
+              </div>
+
             </div>
+
+            <!-- ===================== -->
+            <!-- FILA 2: FECHA INICIO + FECHA FIN -->
+            <!-- ===================== -->
             <div class="row mb-3">
-                <div class="col-md-1">
-                    <button class="btn-custom" [disabled]="formFilter.invalid" (click)="search()">Buscar</button>
-                </div>
+
+              <!-- FECHA INICIO -->
+              <div class="col-md-3">
+                <label for="fechaInicio" class="form-label">Inicio</label>
+                <input
+                  type="date"
+                  formControlName="fechaI"
+                  class="form-control form-control-sm"
+                  id="fechaInicio"
+                >
+              </div>
+
+              <!-- FECHA FIN -->
+              <div class="col-md-3">
+                <label for="fechaFin" class="form-label">Fin</label>
+                <input
+                  type="date"
+                  formControlName="fechaF"
+                  class="form-control form-control-sm"
+                  id="fechaFin"
+                >
+              </div>
+
             </div>
-        </form>
+
+            <!-- ===================== -->
+            <!-- FILA 3: BOTÓN BUSCAR -->
+            <!-- ===================== -->
+            <div class="row mb-3">
+              <div class="col-md-12 d-flex justify-content-end">
+                <button
+                  class="btn-custom"
+                  [disabled]="formFilter.invalid"
+                  (click)="search()"
+                >
+                  Buscar
+                </button>
+              </div>
+            </div>
+
+          </form>
+
+
         <div class="container-action-despacho">
             <div class="button-group">
                 <button class="btn-custom" [disabled]="disabledBtnActions" (click)="addItem()">+ Fila</button>

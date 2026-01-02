@@ -54,6 +54,9 @@ import { DateUtils } from '../../../utils/date/DateUtils ';
 import { dateRangeValidator } from '../../../utils/validations/date-range.validator';
 import { ConfirmacionDespachoForm } from '../../../models/confirmacion-despacho/ConfirmacionDespacho-form.request';
 import { ConfirmationDespachoMapper } from '../../../services/shared/mappers/confirmation-despacho.mapper';
+import { EmpleadoExternoService } from '../../../services/emppleado-externo/empleado-externo.service';
+import { EmpleadoExternoResponseDTO } from '../../../models/catalogs/Empleado-externo/Empleado.Response.DTO';
+
 
 interface ConfirmacionDespacho {
   id?: number;
@@ -127,6 +130,8 @@ export class ConfirmacionDespachoComponent implements OnInit {
   pageSize = 10;
   private plantasFiltradasMap = new Map<number, any[]>();
   private VALUE_EXTERNO = 'EXTERNO';
+  listProveedores: EmpleadoExternoResponseDTO[] = [];
+
 
   constructor(
     private library: FaIconLibrary,
@@ -140,7 +145,9 @@ export class ConfirmacionDespachoComponent implements OnInit {
     private pedidoTrasladoService: PedidoTrasladoService,
     private programArriboService: ProgramArriboService,
     private utilsServc: UtilsService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private empleadoExternoService: EmpleadoExternoService
+
   ) {
     this.library.addIconPacks(fas);
   }
@@ -152,6 +159,7 @@ export class ConfirmacionDespachoComponent implements OnInit {
     this.findAllMaterial();
     this.findAllBodegas(this.siloIdEmpleado);
     this.extractNomPuesto();
+    this.listenSiloChangeLoadProveedores(); // CARGA LOS PROVEEDORES POR SILO
   }
 
   extractSiloId() {
@@ -160,17 +168,47 @@ export class ConfirmacionDespachoComponent implements OnInit {
   }
 
   extractNomPuesto() {
+    const siloId = Number(this.authService.getSiloIdInLocalStorage());
     let tipoEmpleado = this.authService.getNombrePuestonLocalStorage();
     if (tipoEmpleado) {
       if (tipoEmpleado == this.VALUE_EXTERNO) {
         this.isExternoEmployee = true;
         this.formFilter.get('siloId')?.disable();
+        this.loadProveedoresBySilo(siloId);
         this.cdr.detectChanges();
       } else {
         this.opcionSeleccionada = 0;
       }
     }
   }
+private loadProveedoresBySilo(siloId: number): void {
+  console.log('[PROVEEDORES] loadProveedoresBySilo -> siloId:', siloId);
+
+  // limpiar
+  this.listProveedores = [];
+  this.formFilter.get('proveedorId')?.setValue('0');
+
+  if (!siloId || siloId === 0) {
+    console.log('[PROVEEDORES] siloId inválido, no se consulta.');
+    this.cdr.detectChanges();
+    return;
+  }
+
+  this.empleadoExternoService.findAllBySilo(siloId).subscribe({
+    next: (response: EmpleadoExternoResponseDTO[]) => {
+      console.log('[PROVEEDORES] response:', response);
+      this.listProveedores = response ?? [];
+      console.log('[PROVEEDORES] listProveedores.length:', this.listProveedores.length);
+      this.cdr.detectChanges();
+    },
+    error: (error) => {
+      console.error('[PROVEEDORES] ERROR findAllBySilo:', error);
+      this.utilsServc.showMessageError('Error al cargar proveedores');
+    },
+  });
+}
+
+
   initFormConfDespacho() {
     this.formConfDespacho = this.fb.group({
       items: this.fb.array([]),
@@ -181,9 +219,12 @@ export class ConfirmacionDespachoComponent implements OnInit {
     this.formFilter = this.fb.group(
       {
         siloId: ['0', [Validators.required, notZeroStringValidator()]],
+        proveedorId: ['0', [Validators.required, notZeroStringValidator()]], // CAMPO PARA FILTRO DE PROVEEDOR
         materialId: ['0', [Validators.required, notZeroStringValidator()]],
         fechaI: [hoy, []],
-        fechaF: [hoy, []],
+        fechaF: [hoy, []]
+
+
       },
       {
         validators: [
@@ -195,6 +236,45 @@ export class ConfirmacionDespachoComponent implements OnInit {
   get items(): FormArray {
     return this.formConfDespacho.get('items') as FormArray;
   }
+
+  //----Método que trae el proveedor por ID de SILO
+
+private lastSiloIdLoaded = 0;
+
+private listenSiloChangeLoadProveedores(): void {
+  const siloCtrl = this.formFilter.get('silo');
+  if (!siloCtrl) return;
+
+  siloCtrl.valueChanges.subscribe(val => {
+    const siloId = Number(val ?? 0);
+
+    // ✅ si no cambió, NO resetees proveedor
+    if (siloId === this.lastSiloIdLoaded) return;
+
+    this.lastSiloIdLoaded = siloId;
+
+    // ✅ reset proveedor SOLO cuando cambia silo
+    this.listProveedores = [];
+    this.formFilter.patchValue({ proveedor: 0 }, { emitEvent: false });
+
+    if (!siloId) return;
+
+    this.empleadoExternoService.findAllBySilo(siloId).subscribe({
+      next: (resp) => {
+        this.listProveedores = resp ?? [];
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        this.listProveedores = [];
+        this.utilsServc.showMessageError("Hubo un error al cargar proveedores");
+        console.log("ERROR DATA PROVEEDORES: " + JSON.stringify(error));
+      }
+    });
+  });
+}
+
+
+
   getClaveSilo(id: number) {
     let siloRe = this.listSilo.find((s) => s.id == id);
     return siloRe?.nombre;
@@ -1495,6 +1575,11 @@ export class ConfirmacionDespachoComponent implements OnInit {
           } else {
             this.listaConfirmacionesDespacho = [];
             this.collectionSize = this.listaConfirmacionesDespacho.length;
+            this.listaConfirmacionesDespacho = [];
+            this.clearFormArray();
+            this.disabledBtnActions = true;
+            this.cdr.detectChanges();
+            this.utilsServc.showMessageWarningInfo("No se encontró información con los filtros seleccionados."); // 👈 popup
           }
         },
         error: (error) => {
@@ -1706,8 +1791,22 @@ export class ConfirmacionDespachoComponent implements OnInit {
     }
   }
   onSeleccionar(event: Event) {
-    const idSeleccionado = (event.target as HTMLSelectElement).value;
-    this.findAllBodegas(Number(idSeleccionado));
+      const raw = (event.target as HTMLSelectElement).value;
+      const siloId = Number(raw);
+
+      console.log('[SILO] onSeleccionar raw:', raw, 'parsed:', siloId);
+      console.log('[SILO] formFilter.siloId:', this.formFilter.get('siloId')?.value);
+      console.log('[SILO] opcionSeleccionada:', this.opcionSeleccionada);
+
+      this.findAllBodegas(siloId);
+
+      // ✅ aquí cargas proveedores
+      this.loadProveedoresBySilo(siloId);
+
+      this.opcionSeleccionada = siloId;
+
+
+      this.cdr.detectChanges();
   }
 
   onSeleccionarPlantaDestino(event: Event, index: number) {

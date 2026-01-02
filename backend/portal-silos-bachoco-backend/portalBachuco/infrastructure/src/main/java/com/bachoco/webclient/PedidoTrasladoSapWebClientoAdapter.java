@@ -61,9 +61,21 @@ public class PedidoTrasladoSapWebClientoAdapter implements PedidoTrasladoSapPort
 			return extractItemsFromWrapper(responseSap);
 		} catch (InvalidFormatException e) {
 			logger.error("Error en la conexion de SAP pedido traslado: " + e.getMessage());
+			logger.error("Error SAP. type={} message={} cause={}",
+				      e.getClass().getName(),
+				      e.getMessage(),
+				      (e.getCause() != null ? e.getCause().toString() : "null"),
+				      e
+				  );
 			throw new SapConnectionException("Hubo error en conexion a SAP: " + e.getCause());
 		} catch (IOException e) {
 			logger.error("Error en la conexion de SAP pedido traslado: " + e.getMessage());
+			logger.error("Error SAP. type={} message={} cause={}",
+				      e.getClass().getName(),
+				      e.getMessage(),
+				      (e.getCause() != null ? e.getCause().toString() : "null"),
+				      e
+				  );
 			throw new SapConnectionException("Hubo error en conexion a SAP: " + e.getCause());
 		}
 	}

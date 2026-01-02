@@ -38,8 +38,6 @@ import { PedidoCompraResponse } from '../../models/PedidoCompraResponse';
 import { NumberFormatPipe } from '../../utils/formats/number-format.pipe';
 import { EmpleadoExternoService } from '../../services/emppleado-externo/empleado-externo.service';
 import { EmpleadoExternoResponseDTO } from '../../models/catalogs/Empleado-externo/Empleado.Response.DTO';
-import { distinctUntilChanged } from 'rxjs/operators';
-
 
 @Component({
 	selector: 'app-programacion-arribo',
@@ -98,7 +96,6 @@ export class ProgramacionArriboComponent implements OnInit {
 	private datosCompartidosService = inject(DowloadDataService);
 
   listProveedores: EmpleadoExternoResponseDTO[] = [];
-  private lastSiloIdLoaded = 0;
 
 
 	private _collectionSizeArribo = 0;
@@ -140,15 +137,13 @@ export class ProgramacionArriboComponent implements OnInit {
 	}
 	initForm() {
 		this.formArriboFilter = new FormGroup({
-			silo: new FormControl(0, [Validators.required, notZeroStringValidator()]),
-			planta: new FormControl(0, [Validators.required, notZeroStringValidator()]),
-			material: new FormControl(0, [Validators.required, notZeroStringValidator()]),
-          proveedor: new FormControl(0, [Validators.required, notZeroStringValidator()]), //Campo nuevo para filtrar proveedores por silo
+			silo: new FormControl('0', [Validators.required, notZeroStringValidator()]),
+			planta: new FormControl('0', [Validators.required, notZeroStringValidator()]),
+			material: new FormControl('0', [Validators.required, notZeroStringValidator()]),
+          proveedor: new FormControl('0', [Validators.required, notZeroStringValidator()]), //  nuevo
 
 		});
-
-  this.listenSiloChangeLoadProveedores(); // llamado para cargar proveedores
-
+    this.listenSiloChangeLoadProveedores(); // ✅ nuevo
 	}
 
 	initFormArribo() {
@@ -256,6 +251,42 @@ export class ProgramacionArriboComponent implements OnInit {
 		this.items.clear();
 		this.visibleItems=[];
 	}
+  //*******************listener para cargar proveedores al cambiar silo */
+ private lastSiloIdLoaded = 0;
+
+private listenSiloChangeLoadProveedores(): void {
+  const siloCtrl = this.formArriboFilter.get('silo');
+  if (!siloCtrl) return;
+
+  siloCtrl.valueChanges.subscribe(val => {
+    const siloId = Number(val ?? 0);
+
+    // ✅ si no cambió, NO resetees proveedor
+    if (siloId === this.lastSiloIdLoaded) return;
+
+    this.lastSiloIdLoaded = siloId;
+
+    // ✅ reset proveedor SOLO cuando cambia silo
+    this.listProveedores = [];
+    this.formArriboFilter.patchValue({ proveedor: 0 }, { emitEvent: false });
+
+    if (!siloId) return;
+
+    this.empleadoExternoService.findAllBySilo(siloId).subscribe({
+      next: (resp) => {
+        this.listProveedores = resp ?? [];
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        this.listProveedores = [];
+        this.utilServ.showMessageError("Hubo un error al cargar proveedores");
+        console.log("ERROR DATA PROVEEDORES: " + JSON.stringify(error));
+      }
+    });
+  });
+}
+
+
 
 	refreshPedidos() {
 		this.listProgramPedTrasladoFilter = this.listProgramPedTraslado.map((arribo, i) => ({ id: i + 1, ...arribo })).slice(
@@ -323,41 +354,6 @@ export class ProgramacionArriboComponent implements OnInit {
 			this.visibleItems.push(this.items.at(i) as FormGroup);
 		}
 	}
- //Método para cambiar proveedores al cambiar silo
-private listenSiloChangeLoadProveedores(): void {
-  const siloCtrl = this.formArriboFilter.get('silo');
-  if (!siloCtrl) return;
-
-  siloCtrl.valueChanges.subscribe(val => {
-    const siloId = Number(val ?? 0);
-
-    // ✅ si NO cambió el silo, NO hagas nada (evita reset al buscar)
-    if (siloId === this.lastSiloIdLoaded) return;
-
-    // ✅ actualiza el "último silo"
-    this.lastSiloIdLoaded = siloId;
-
-    // ✅ reset proveedor SOLO cuando realmente cambió silo
-    this.formArriboFilter.patchValue({ proveedor: 0 }, { emitEvent: false });
-
-    // limpiar lista solo en cambio real
-    this.listProveedores = [];
-
-    if (!siloId || siloId === 0) return;
-
-    this.empleadoExternoService.findAllBySilo(siloId).subscribe({
-      next: (resp) => {
-        this.listProveedores = resp ?? [];
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        this.listProveedores = [];
-        this.utilServ.showMessageError("Hubo un error al cargar proveedores");
-        console.log("ERROR DATA PROVEEDORES: " + JSON.stringify(error));
-      }
-    });
-  });
-}
 
 	onPageChange(): void {
 		this.updateVisibleItems();
@@ -471,9 +467,6 @@ private listenSiloChangeLoadProveedores(): void {
 	}
 
 	async findStock(): Promise<void> {
-
-  const proveedorSeleccionado = this.formArriboFilter.get('proveedor')?.value; // 👈 guarda
-
 		this.utilServ.markAllControlsAsTouched(this.formArriboFilter);
 		if (!this.formArriboFilter.valid) {
 			return;
@@ -518,10 +511,6 @@ private listenSiloChangeLoadProveedores(): void {
 			this.utilServ.showMessageError("Hubo un error en la carga del stock");
 			console.error("ERROR AL EXTRAER STOCK DE SILO:", error);
 		} finally {
-          // restaura (si no quieres que se pierda por rerender o recarga de lista)
-
-          this.formArriboFilter.patchValue({ proveedor: proveedorSeleccionado }, { emitEvent: false });
-
 			this.cdr.detectChanges();
 		}
 	}
@@ -531,11 +520,6 @@ private listenSiloChangeLoadProveedores(): void {
 			const claveMaterial = this.findClaveMaterialById(this.getValueNumber("material"));
 			const claveSilo = this.getClaveSiloById(this.getValueNumber("silo"));
 
-const proveedorId = this.getProveedorId();
-const proveedor = this.listProveedores.find(p => p.id === proveedorId);
-const sapVendor = (proveedor as any)?.sapVendor ?? ""; // si existe en el DTO
-
-
 			const plantaId = this.getValueNumber('planta');
 			const claveDestino = this.getPlantaDestinoById(plantaId) ?? "";
 			try {
@@ -544,7 +528,7 @@ const sapVendor = (proveedor as any)?.sapVendor ?? ""; // si existe en el DTO
 						claveSilo,
 						claveMaterial,
 						claveDestino,
-						sapVendor,
+						"",
 						""
 					)
 				);
@@ -556,10 +540,6 @@ const sapVendor = (proveedor as any)?.sapVendor ?? ""; // si existe en el DTO
 			}
 		}
 	}
-
-  getProveedorId(): number {
-  return Number(this.formArriboFilter.get('proveedor')?.value ?? 0);
-}
 	async savePedTrasladoBySap(): Promise<string> {
 		if (!this.formArriboFilter.valid) {
 			return "El formulario no es válido";
@@ -567,17 +547,13 @@ const sapVendor = (proveedor as any)?.sapVendor ?? ""; // si existe en el DTO
 		const claveMaterial = this.findClaveMaterialById(this.getValueNumber("material"));
 		const claveSilo = this.getClaveSiloById(this.getValueNumber("silo"));
 		const plantaDestino = this.getPlantaDestinoById(this.getValueNumber("planta"));
-
-    const proveedorId = this.getProveedorId();
-    const proveedor = this.listProveedores.find(p => p.id === proveedorId);
-    const sapVendor = (proveedor as any)?.sapVendor ?? "";
 		try {
 			await firstValueFrom(
 				this.pedidoTrasladoService.savePedTrasladoBySap(
 					claveSilo,
 					claveMaterial,
 					plantaDestino,
-					sapVendor,
+					"",
 					""
 				)
 			);
@@ -632,15 +608,7 @@ const sapVendor = (proveedor as any)?.sapVendor ?? ""; // si existe en el DTO
 				this.refreshPedidos()
 				this.clearItems();
 				this.cdr.detectChanges();
-				//this.utilServ.showMessageWarningInfoNoExisteRegistrosFilters();
-        //this.utilServ.showMessageWarningInfo("No se encontró información con los filtros seleccionados.");
-        await Swal.fire({
-          icon: 'warning',
-          title: 'Sin resultados',
-          text: 'No se encontró información con los filtros seleccionados.',
-          confirmButtonText: 'Aceptar'
-        });
-
+				this.utilServ.showMessageWarningInfoNoExisteRegistrosFilters();
 			}
 		} catch (error) {
 			this.listProgramPedTraslado = [];
@@ -825,7 +793,7 @@ const sapVendor = (proveedor as any)?.sapVendor ?? ""; // si existe en el DTO
 			}))
 		});
 
-		//  MEJORADO: Usar función más flexible
+		// 🔥 MEJORADO: Usar función más flexible
 		const resultado = this.obtenerMejorCombinacionFlexible(
 			this.listProgramPedTrasladoFilter.map(p => ({
 				...p,
@@ -842,7 +810,7 @@ const sapVendor = (proveedor as any)?.sapVendor ?? ""; // si existe en el DTO
 			return;
 		}
 
-		//  MOSTRAR INFORMACIÓN DETALLADA DEL AJUSTE
+		// 🔥 MOSTRAR INFORMACIÓN DETALLADA DEL AJUSTE
 		if (resultado.objetoAjustado) {
 			console.log('🔍 AJUSTE REALIZADO:');
 			console.log(`- Pedido ajustado: ${resultado.objetoAjustado.numeroPedido}`);
@@ -864,13 +832,13 @@ const sapVendor = (proveedor as any)?.sapVendor ?? ""; // si existe en el DTO
 		this.buildRequestConRestasOptimizadas(resultado.seleccionados, resultado.objetoAjustado);
 	}
 
-	// Algoritmo más flexible que prioriza pedidos individuales
+	// 🔥 NUEVO: Algoritmo más flexible que prioriza pedidos individuales
 	private obtenerMejorCombinacionFlexible(
 		items: any[],
 		campo: string,
 		objetivo: number
 	) {
-		console.log(' Objetivo:', objetivo);
+		console.log('🎯 Objetivo:', objetivo);
 
 		// ESTRATEGIA 1: Buscar un solo pedido que sea suficiente
 		const pedidoIndividual = this.buscarPedidoIndividualOptimo(items, campo, objetivo);
@@ -897,7 +865,7 @@ const sapVendor = (proveedor as any)?.sapVendor ?? ""; // si existe en el DTO
 		return { seleccionados: [], total: 0, objetoAjustado: null };
 	}
 
-	// Buscar un solo pedido que sea óptimo
+	// 🔥 NUEVO: Buscar un solo pedido que sea óptimo
 	private buscarPedidoIndividualOptimo(items: any[], campo: string, objetivo: number) {
 		let mejorPedido: any = null;
 		let mejorDiferencia = Number.MAX_SAFE_INTEGER;
@@ -947,7 +915,7 @@ const sapVendor = (proveedor as any)?.sapVendor ?? ""; // si existe en el DTO
 		return null;
 	}
 
-	//  Buscar combinación de múltiples pedidos
+	// 🔥 NUEVO: Buscar combinación de múltiples pedidos
 	private buscarCombinacionMultiple(items: any[], campo: string, objetivo: number) {
 		// Para objetivos pequeños, buscar combinación de los pedidos más pequeños
 		const pedidosPequenos = [...items]
@@ -992,7 +960,7 @@ const sapVendor = (proveedor as any)?.sapVendor ?? ""; // si existe en el DTO
 		return { seleccionados: [], total: 0, objetoAjustado: null };
 	}
 
-	//   Último recurso - pedido más pequeño que cubra el objetivo
+	// 🔥 NUEVO: Último recurso - pedido más pequeño que cubra el objetivo
 	private buscarPedidoMinimoSuficiente(items: any[], campo: string, objetivo: number) {
 		const pedidosSuficientes = items.filter(item => item[campo] >= objetivo);
 
@@ -1023,7 +991,7 @@ const sapVendor = (proveedor as any)?.sapVendor ?? ""; // si existe en el DTO
 		};
 	}
 
-
+	// 🔥 AQUÍ ESTÁ EL MÉTODO QUE FALTABA
 	private elegirMejorPedidoParaAjustar(combinacion: any[], campo: string, diferenciaNecesaria: number) {
 		// Estrategia 1: Buscar el pedido que al restarle deje el mayor sobrante
 		let mejorOpcion: any = null;
@@ -1119,7 +1087,7 @@ const sapVendor = (proveedor as any)?.sapVendor ?? ""; // si existe en el DTO
 		};
 	}
 
-	//  MEJORADO: Build request - SOLO UN pedido debe tener 'R'
+	// 🔥 MEJORADO: Build request - SOLO UN pedido debe tener 'R'
 	private buildRequestConRestasOptimizadas(pedidosSeleccionados: any[], ajuste: any) {
 		const siloId = this.getValueNumber("silo");
 		const materialId = this.getValueNumber("material");
@@ -1127,7 +1095,7 @@ const sapVendor = (proveedor as any)?.sapVendor ?? ""; // si existe en el DTO
 
 		const listProgramRequest: ProgramArriboRequest[] = [];
 
-		//  CORREGIDO: Asignar SOLO UN pedido para las programaciones
+		// 🔥 CORREGIDO: Asignar SOLO UN pedido para las programaciones
 		if (pedidosSeleccionados.length > 0) {
 			const pedidoPrincipal = pedidosSeleccionados[0]; // Usar solo el primer pedido
 
@@ -1152,7 +1120,7 @@ const sapVendor = (proveedor as any)?.sapVendor ?? ""; // si existe en el DTO
 			});
 		}
 
-		//  CORREGIDO: El ajuste SOLO si existe y es diferente a las programaciones
+		// 🔥 CORREGIDO: El ajuste SOLO si existe y es diferente a las programaciones
 		if (ajuste && ajuste.cantidadRestada > 0) {
 			const requestAjuste: ProgramArriboRequest = {
 				numeroPedidoTraslado: ajuste.numeroPedido,
