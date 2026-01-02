@@ -46,7 +46,7 @@
               @if (formReporteArribo.get('fechaF')?.errors?.['required']) {
                Campo requerido.
               }
-              @else if (formReporteArribo.get('fechaF')?.errors?.['rangoFechaInvalido']) { 
+              @else if (formReporteArribo.get('fechaF')?.errors?.['rangoFechaInvalido']) {
                 Campo fecha fin no debe ser menor a fecha inicio.
             }
             }
@@ -58,10 +58,26 @@
 
 
     <div class="row mb-3">
-      <div class="col-md-1">
-        <button class="btn-custom" (click)="submmit()">Buscar</button>
+      <div class="col-md-12 d-flex justify-content-start gap-2">
+        <button
+          type="button"
+          class="btn-custom"
+          [disabled]="formReporteArribo.invalid"
+          (click)="submmit()"
+        >
+          Buscar
+        </button>
+
+        <button
+          type="button"
+          class="btn-custom"
+          (click)="downloadExcel()"
+        >
+          Exportar Excel
+        </button>
       </div>
     </div>
+
     <!-- Sección de resultados -->
     <div class="results-title">Toneladas Programas</div>
     <div class="scroll-lista">

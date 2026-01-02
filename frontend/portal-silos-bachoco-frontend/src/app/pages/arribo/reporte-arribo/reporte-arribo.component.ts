@@ -20,6 +20,9 @@ import { notZeroStringValidator } from '../../../services/shared/validators/not-
 import { UtilsService } from '../../../services/shared/utils.service';
 import { dateRangeValidator } from '../../../utils/validations/date-range.validator';
 import { AuthServiceService } from '../../../services/auth/auth-service.service';
+import * as XLSX from 'xlsx';
+
+
 
 @Component({
   selector: 'app-reporte-arribo',
@@ -161,9 +164,58 @@ export class ReporteArriboComponent implements OnInit {
       this.utilServ.markAllControlsAsTouched(this.formReporteArribo);
     }
   }
+downloadExcel(): void {
+  console.log('[EXCEL] Click exportar');
+
+  // 👉 ESTA es la lista que pinta la tabla
+  const data = this.listaReporteArribo;
+
+  console.log('[EXCEL] Total registros:', data?.length ?? 0);
+
+  // 🔴 VALIDACIÓN CLAVE
+  if (!data || data.length === 0) {
+    this.utilServ.showMessageWarningInfo(
+      'No hay datos en la tabla para exportar'
+    );
+    return;
+  }
+
+  // =========================
+  // GENERACIÓN DEL EXCEL
+  // =========================
+  const rows = data.map(r => ({
+    Toneladas: r.toneladas,
+    Material: r.material,
+    Fecha: r.fecha,
+    Pedido: r.numeroPedido,
+    'Planta Destino': r.destinoPlanta
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+
+  ws['!cols'] = [
+    { wch: 12 },
+    { wch: 25 },
+    { wch: 14 },
+    { wch: 18 },
+    { wch: 25 }
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Arribos');
+
+  const siloId = this.formReporteArribo.get('siloId')?.value ?? '0';
+  const fechaI = this.formReporteArribo.get('fechaI')?.value ?? '';
+  const fechaF = this.formReporteArribo.get('fechaF')?.value ?? '';
+
+  const fileName = `Reporte_Arribos_Silo_${siloId}_${fechaI}_a_${fechaF}.xlsx`;
+
+  XLSX.writeFile(wb, fileName);
+}
 
   clearListas() {
     this.listaReporteArribo = [];
     this.listaReporteArriboFilters = [];
   }
 }
+
