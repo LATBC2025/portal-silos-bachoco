@@ -242,6 +242,7 @@ export class UtilsService {
       f.pesoTara,
       f.humedad,
       f.chofer,
+      f.placaTractor,
       f.placaJaula,
       f.lineaTransportista,
       f.destinoId.toString(),

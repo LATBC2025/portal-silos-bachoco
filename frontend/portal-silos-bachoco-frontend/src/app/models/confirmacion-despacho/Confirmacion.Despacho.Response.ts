@@ -10,6 +10,7 @@ export class ConfirmacionDespachoResponse {
     public pesoTara: number,
     public humedad: string,
     public chofer: string,
+    public placaTractor: string,
     public placaJaula: string,
     public lineaTransportista: string,
     public claveDestino: string,

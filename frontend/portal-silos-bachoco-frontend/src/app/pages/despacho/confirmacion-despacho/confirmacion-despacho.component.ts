@@ -68,6 +68,7 @@ interface ConfirmacionDespacho {
   pesoTara: number;
   humedad: string;
   chofer: string;
+  placaTractor: string; // ✅ NUEVO
   placaJaula: string;
   lineaTransportista: string;
   destino: string;
@@ -131,6 +132,8 @@ export class ConfirmacionDespachoComponent implements OnInit {
   private plantasFiltradasMap = new Map<number, any[]>();
   private VALUE_EXTERNO = 'EXTERNO';
   listProveedores: EmpleadoExternoResponseDTO[] = [];
+
+
 
 
   constructor(
@@ -223,7 +226,6 @@ private loadProveedoresBySilo(siloId: number): void {
         materialId: ['0', [Validators.required, notZeroStringValidator()]],
         fechaI: [hoy, []],
         fechaF: [hoy, []]
-
 
       },
       {
@@ -459,6 +461,7 @@ private listenSiloChangeLoadProveedores(): void {
       ],
       humedad: ['', [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)]],
       chofer: ['', [Validators.required]],
+      placaTractor: ['', [Validators.required]], // ✅ NUEVO
       placaJaula: ['', [Validators.required]],
       lineaTransportista: ['', [Validators.required]],
       destinoId: ['0', [Validators.required, notZeroStringValidator()]],
@@ -505,6 +508,7 @@ private listenSiloChangeLoadProveedores(): void {
         Peso_tara: string;
         Humedad: string;
         Chofer: string;
+        Placa_Tractor: string; // ✅ NUEVO
         Placa_Jaula: string;
         Linea_transportista: string;
         Destino: string;
@@ -520,6 +524,7 @@ private listenSiloChangeLoadProveedores(): void {
         'Peso_tara',
         'Humedad',
         'Chofer',
+        'Placa_Tractor', // ✅ NUEVO
         'Placa_Jaula',
         'Linea_transportista',
         'Destino',
@@ -627,6 +632,7 @@ private listenSiloChangeLoadProveedores(): void {
           Peso_tara: '',
           Humedad: '',
           Chofer: '',
+          Placa_Tractor:'',
           Placa_Jaula: '',
           Linea_transportista: '',
           Destino: '',
@@ -779,6 +785,11 @@ private listenSiloChangeLoadProveedores(): void {
           msg: 'El nombre del chofer es obligatorio',
         },
         {
+          field: 'Placa_Tractor',
+          msg: 'La placa del tractor es obligatoria', // ✅ NUEVO
+        },
+
+        {
           field: 'Placa_Jaula',
           msg: 'La placa/jaula es obligatoria',
         },
@@ -921,6 +932,11 @@ private listenSiloChangeLoadProveedores(): void {
           msg: 'El nombre del chofer es obligatorio',
         },
         {
+          field: 'Placa_Tractor',
+          msg: 'La placa del tractor es obligatoria', // ✅ NUEVO
+        },
+
+        {
           field: 'Placa_Jaula',
           msg: 'La placa/jaula es obligatoria',
         },
@@ -1048,6 +1064,7 @@ private listenSiloChangeLoadProveedores(): void {
                   Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/),
                 ],
               ],
+              placaTractor: [element['Placa_Tractor'] ?? '', [Validators.required]], // ✅ NUEVO
               placaJaula: [element['Placa_Jaula'], [Validators.required]],
               lineaTransportista: [
                 element['Linea_transportista'],
@@ -1660,6 +1677,9 @@ private listenSiloChangeLoadProveedores(): void {
         [Validators.required, Validators.pattern(/^[+-]?(\d+\.?\d*|\.\d+)$/)],
       ],
       chofer: [confirmacion.chofer || '', [Validators.required]],
+
+      placaTractor: [confirmacion.placaTractor || '', [Validators.required]], // ✅ NUEVO
+
       placaJaula: [confirmacion.placaJaula || '', [Validators.required]],
       lineaTransportista: [
         confirmacion.lineaTransportista || '',
@@ -1956,6 +1976,7 @@ private listenSiloChangeLoadProveedores(): void {
       'pesoTara',
       'humedad',
       'chofer',
+      'placaTractor', // ✅ NUEVO
       'placaJaula',
       'lineaTransportista',
     ];

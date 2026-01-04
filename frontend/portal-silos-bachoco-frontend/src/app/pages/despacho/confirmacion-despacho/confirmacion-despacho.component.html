@@ -152,6 +152,7 @@
                             <th scope="col">Peso tara</th>
                             <th scope="col">Humedad</th>
                             <th scope="col">Chofer</th>
+                            <th scope="col">Placa Tractor</th>   <!-- ✅ NUEVO -->
                             <th scope="col">Placa/Jaula</th>
                             <th scope="col">Linea transportista</th>
                             <th scope="col">Destino</th>
@@ -276,6 +277,17 @@
                                     }
                                 </div>
                             </td>
+                            <td>
+                              <input type="text" formControlName="placaTractor" class="form-control">
+                              <div class="text-danger" style="font-size: 0.8em;">
+                                @if (item.get('placaTractor')?.invalid && item.get('placaTractor')?.touched) {
+                                  @if (item.get('placaTractor')?.errors?.['required']) {
+                                    Campo requerido.
+                                  }
+                                }
+                              </div>
+                            </td>
+
                             <td>
                                 <input type="text" formControlName="placaJaula" class="form-control">
                                 <div class="text-danger" style="font-size: 0.8em;">
