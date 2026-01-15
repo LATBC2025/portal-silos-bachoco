@@ -23,6 +23,9 @@ import { DowloadDataService } from '../../../services/shared/dowload-data.servic
 import { dateRangeValidator } from '../../../utils/validations/date-range.validator';
 import { notZeroStringValidator } from '../../../services/shared/validators/not-zero-string.validator';
 import { BackendError } from '../../../models/error/Backend.Errror.response';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
 
 @Component({
   selector: 'app-reporte-pedido-compra',
@@ -47,6 +50,8 @@ import { BackendError } from '../../../models/error/Backend.Errror.response';
   styleUrl: './reporte-pedido-compra.component.css'
 })
 export class ReportePedidoCompraComponent implements OnInit {
+  exportando = false;
+
   hide = true;
   page = 1;
   pageSize = 10;
@@ -150,9 +155,11 @@ export class ReportePedidoCompraComponent implements OnInit {
   async findAllPedidosCompra(): Promise<void> {
     this.utilsServc.markAllControlsAsTouched(this.formProgramArribo);
     if (this.formProgramArribo.valid) {
+          this.clearListas(); // ✅ para que Exportar se deshabilite mientras carga
       const plantaDestino="";
       const claveMaterial = this.findClaveMaterialByid(this.getValueNumber("material"));
      const claveSilo=this.findClaveSiloById(this.getValueNumber("silo"));
+
       try {
         const response: PedidoCompraResponse[] = await firstValueFrom(
           this.pedidoCompraService.findAll(
@@ -187,7 +194,7 @@ export class ReportePedidoCompraComponent implements OnInit {
           } else{
             this.utilsServc.showMessageError("Hubo un eror en la consulta de datos con esos filtros");
           }
-          // En el catch, 'error' ya es el objeto de error. 
+          // En el catch, 'error' ya es el objeto de error.
           // Acceder a 'error["error"]' es común con HttpClient en caso de errores HTTP.
           console.log("ERROR PEDIDO COMPRA: " + JSON.stringify(err));
         }
@@ -316,4 +323,116 @@ export class ReportePedidoCompraComponent implements OnInit {
       this.cdr.detectChanges();
     }
   }
+
+  exportar(): void {
+  const data = this.listaPedidosCompra; //  TODO el resultado
+  if (!data?.length) return;
+
+  this.exportando = true;
+
+  try {
+    // ---- 1) Texto de filtros (2da línea) ----
+    const siloId = Number(this.getValue("silo"));
+    const materialId = Number(this.getValue("material"));
+
+    const siloTxt =
+      this.listSilo.find(s => s.id === siloId)?.nombre
+      ?? this.listSilo.find(s => s.id === siloId)?.silo
+      ?? String(siloId);
+
+    const materialTxt =
+      this.listMateriales.find(m => m.id === materialId)?.descripcion
+      ?? this.listMateriales.find(m => m.id === materialId)?.nombre
+      ?? String(materialId);
+
+    const fechaInicio = this.getValue("fechaInicio");
+    const fechaFin = this.getValue("fechaFin");
+
+    const titulo = "Reporte Pedido Compra";
+    const filtros = `Filtros: Silo=${siloTxt} | Material=${materialTxt} | Fecha Inicio=${fechaInicio} | Fecha Fin=${fechaFin}`;
+
+    // ---- 2) Filas (tabla) ----
+    const rows = data.map(x => ({
+      "Id": x.pedidoCompraId ?? "",
+      "Pedido de compra": x.numeroPedido ?? "",
+      "Cantidad pedida": x.cantidadPedida ?? 0,
+      "Cantidad entregada": x.cantidadEntregada ?? 0,
+      "Cantidad despachada": x.cantidadDespachada ?? 0,
+      "Cantidad pendiente de despacho": x.cantidadPendienteDespachada ?? 0,
+      "Contrato legal": x.contratoLegal ?? "",
+      "Certificado de depósito": x.urlCertificadoDeposito ? "Sí" : "No",
+      // Si quieres guardar el nombre/uuid:
+      "UUID certificado": x.urlCertificadoDeposito ?? "",
+    }));
+
+    // ---- 3) Hoja: título + filtros + blanco ----
+    // A1: Título
+    // A2: Filtros
+    // A3: Blanco
+    // A4: Tabla
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([
+      [titulo],
+      [filtros],
+      []
+    ]);
+
+    XLSX.utils.sheet_add_json(ws, rows, {
+      origin: "A4",
+      skipHeader: false
+    });
+
+    // ---- 4) Anchos de columna ----
+    ws["!cols"] = [
+      { wch: 10 }, // Id
+      { wch: 18 }, // Pedido compra
+      { wch: 16 }, // pedida
+      { wch: 18 }, // entregada
+      { wch: 18 }, // despachada
+      { wch: 28 }, // pendiente
+      { wch: 18 }, // contrato legal
+      { wch: 22 }, // cert. deposito (Sí/No)
+      { wch: 45 }, // uuid/url
+    ];
+
+    // ---- 5) Fusionar título y filtros a lo ancho ----
+    // Tenemos 9 columnas => A..I (0..8)
+    ws["!merges"] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }, // A1:I1
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 8 } }, // A2:I2
+    ];
+
+    // ---- 6) Workbook + descarga ----
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "PedidoCompra");
+
+    const excelBuffer: ArrayBuffer = XLSX.write(wb, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const dd = String(now.getDate()).padStart(2, "0");
+    const hh = String(now.getHours()).padStart(2, "0");
+    const mi = String(now.getMinutes()).padStart(2, "0");
+
+    const fileName = `reporte_pedido_compra_${yyyy}${mm}${dd}_${hh}${mi}.xlsx`;
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
+
+    saveAs(blob, fileName);
+
+  } catch (e) {
+    console.error("Error exportando Excel:", e);
+    this.utilsServc.showMessageError("No se pudo exportar el archivo Excel.");
+  } finally {
+    this.exportando = false;
+    this.cdr.detectChanges();
+  }
+}
+
+
 }

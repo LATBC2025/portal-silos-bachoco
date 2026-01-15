@@ -78,9 +78,21 @@
       <div class="col-md-1">
         <button class="btn-custom" (click)="findAllPedidosTraslado()">Buscar</button>
       </div>
+      <!--BOTON PARA GENERAR REPORTE DE EXCEL-->
+      <div class="col-md-2">
+    <button
+      class="btn-custom"
+      type="button"
+      (click)="exportar()"
+      [disabled]="!listaPedidoTrasladoRequestFilter?.length || exportando"
+      [title]="!listaPedidoTrasladoRequestFilter?.length ? 'Primero realiza una búsqueda' : 'Exportar resultados'">
+      {{ exportando ? 'Exportando...' : 'Exportar' }}
+    </button>
+  </div>
+
     </div>
 
-<!-- ✅ Mensaje informativo (saldo se libera mañana) -->
+<!--  Mensaje informativo (saldo se libera mañana) -->
     @if (showSaldoInfo) {
       <div class="alert alert-info mt-2" role="alert">
         ℹ️ Algunos pedidos tienen confirmaciones del día de hoy.
@@ -98,7 +110,7 @@
             <th scope="col">Pedido Traslado</th>
             <th scope="col">Cantidad pedido</th>
             <th scope="col">Cantidad Traslado</th>
-            <!-- ✅ NUEVAS COLUMNAS -->
+            <!--  NUEVAS COLUMNAS PARA LIBERAR SALDO -->
             <th scope="col">Cantidad Embarcada Real</th>
             <th scope="col">Cantidad Pendiente por Programar</th>
 

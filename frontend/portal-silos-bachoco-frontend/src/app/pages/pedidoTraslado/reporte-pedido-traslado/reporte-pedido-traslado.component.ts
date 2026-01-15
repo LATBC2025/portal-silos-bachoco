@@ -24,6 +24,9 @@ import { DowloadDataService } from '../../../services/shared/dowload-data.servic
 import { notZeroStringValidator } from '../../../services/shared/validators/not-zero-string.validator';
 import { dateRangeValidator } from '../../../utils/validations/date-range.validator';
 import { datePairValidator } from '../../../utils/validations/date-pair.validator';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
 
 @Component({
   selector: 'app-reporte-pedido-traslado',
@@ -59,6 +62,8 @@ export class ReportePedidoTrasladoComponent implements OnInit {
   listMateriales: MaterialResponse[] = [];
 
   showSaldoInfo = false;
+  //Bandera para habilitar exportar a excel
+  exportando = false;
   private datosCompartidosService = inject(DowloadDataService);
   //
   isSeccesPedCompra: number = 0;
@@ -305,5 +310,118 @@ export class ReportePedidoTrasladoComponent implements OnInit {
       }
     })
   }
+  exportar(): void {
+  const data = this.listaPedidoTrasladoRequest; // TODO el resultado
+  if (!data?.length) return;
+
+  this.exportando = true;
+
+  try {
+    // ---- 1) Texto de filtros (2da línea) ----
+    const siloId = Number(this.getValue("silo"));
+    const materialId = Number(this.getValue("material"));
+
+    const siloTxt =
+      this.listSilo.find(s => s.id === siloId)?.nombre
+      ?? this.listSilo.find(s => s.id === siloId)?.silo
+      ?? String(siloId);
+
+    const materialTxt =
+      this.listMateriales.find(m => m.id === materialId)?.descripcion
+      ?? this.listMateriales.find(m => m.id === materialId)?.nombre
+      ?? String(materialId);
+
+    const fechaInicio = this.getValue("fechaInicio");
+    const fechaFin = this.getValue("fechaFin");
+
+    const titulo = "Reporte Pedido Traslado";
+    const filtros = `Filtros: Silo=${siloTxt} | Material=${materialTxt} | Fecha Inicio=${fechaInicio} | Fecha Fin=${fechaFin}`;
+
+    // ---- 2) Tabla (filas) ----
+    const rows = data.map((x) => ({
+      "Id": x.pedidoTrasladoId ?? "",
+      "Planta Destino": x.nombrePlantaDestino ?? "",
+      "Pedido Traslado": x.numPedidoTraslado ?? "",
+      "Cantidad pedido": x.cantidadPedido ?? 0,
+      "Cantidad Traslado": x.cantidadTraslado ?? 0,
+      "Cantidad Embarcada Real": x.cantidadEmbarcadaReal ?? 0,
+      "Cantidad Pendiente por Programar": x.cantidadPendientePorProgramar ?? 0,
+      "Cantidad Recibida": x.cantidadRecibidaPa ?? 0,
+      "Cantidad Pendiente Traslado": x.cantidadPendienteTraslado ?? 0,
+      "Pedido Compras Asociado": x.numCompraAsociado ?? "",
+      "Traslado Pendiente Facturas": x.trasladosPendFact ?? 0,
+    }));
+
+    // ---- 3) Hoja: título + filtros + blanco ----
+    // A1: Título
+    // A2: Filtros
+    // A3: en blanco
+    // A4: tabla
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([
+      [titulo],
+      [filtros],
+      []
+    ]);
+
+    XLSX.utils.sheet_add_json(ws, rows, {
+      origin: "A4",
+      skipHeader: false
+    });
+
+    // ---- 4) Anchos de columna ----
+    ws["!cols"] = [
+      { wch: 10 }, // Id
+      { wch: 22 }, // Planta
+      { wch: 18 }, // Pedido Traslado
+      { wch: 16 }, // Cant pedido
+      { wch: 16 }, // Cant traslado
+      { wch: 22 }, // embarcada real
+      { wch: 30 }, // pendiente por programar
+      { wch: 16 }, // recibida
+      { wch: 26 }, // pendiente traslado
+      { wch: 22 }, // pedido compra
+      { wch: 26 }, // pendiente facturas
+    ];
+
+    // ---- 5) Fusionar título y filtros hasta la última columna ----
+    // Última columna = 11 columnas => A..K (0..10)
+    // Título: A1:K1, Filtros: A2:K2
+    ws["!merges"] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 10 } }, // A1:K1
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 10 } }, // A2:K2
+    ];
+
+    // ---- 6) Workbook + descarga ----
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "PedidoTraslado");
+
+    const excelBuffer: ArrayBuffer = XLSX.write(wb, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const dd = String(now.getDate()).padStart(2, "0");
+    const hh = String(now.getHours()).padStart(2, "0");
+    const mi = String(now.getMinutes()).padStart(2, "0");
+
+    const fileName = `reporte_pedido_traslado_${yyyy}${mm}${dd}_${hh}${mi}.xlsx`;
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
+
+    saveAs(blob, fileName);
+
+  } catch (e) {
+    console.error("Error exportando Excel:", e);
+    this.utilService.showMessageError("No se pudo exportar el archivo Excel.");
+  } finally {
+    this.exportando = false;
+    this.cdr.detectChanges();
+  }
+}
 
 }
