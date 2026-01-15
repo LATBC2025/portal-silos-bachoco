@@ -14,6 +14,11 @@ public class PedidoTrasladoDTO {
 	private Integer trasladosPendFact;
 	private String posicion;
 	
+	private Double cantidadEmbarcadaReal;          // confirmado real
+	private Double cantidadPendientePorProgramar;  // saldo liberado
+	private Boolean saldoSeLiberaManana;           // opcional (para mensaje)
+
+	
 	public PedidoTrasladoDTO() {
 	}
 
@@ -104,5 +109,30 @@ public class PedidoTrasladoDTO {
 	public void setPosicion(String posicion) {
 		this.posicion = posicion;
 	}
+
+	public Double getCantidadEmbarcadaReal() {
+		return cantidadEmbarcadaReal;
+	}
+
+	public void setCantidadEmbarcadaReal(Double cantidadEmbarcadaReal) {
+		this.cantidadEmbarcadaReal = cantidadEmbarcadaReal;
+	}
+
+	public Double getCantidadPendientePorProgramar() {
+		return cantidadPendientePorProgramar;
+	}
+
+	public void setCantidadPendientePorProgramar(Double cantidadPendientePorProgramar) {
+		this.cantidadPendientePorProgramar = cantidadPendientePorProgramar;
+	}
+
+	public Boolean getSaldoSeLiberaManana() {
+		return saldoSeLiberaManana;
+	}
+
+	public void setSaldoSeLiberaManana(Boolean saldoSeLiberaManana) {
+		this.saldoSeLiberaManana = saldoSeLiberaManana;
+	}
+	
 	
 }

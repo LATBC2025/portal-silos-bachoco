@@ -1,6 +1,8 @@
 package com.bachoco.port;
 
 import java.util.List;
+import java.util.Map;
+import java.time.LocalDate;
 
 import com.bachoco.model.procedores.PedTrasladoArriboConfigDespachoDTO;
 import com.bachoco.model.procedores.PedidoTrasladoArriboDTO;
@@ -13,4 +15,9 @@ public interface PedidoTrasladoJdbcRepositoryPort {
 	public List<PedidoTrasladoDTO> findByFiltersCantidadDisponible(Integer siloId,Integer materialId,String fechaInicio,String fechaFin);
 	public List<PedidoTrasladoArriboDTO> findByFilterProgramArribo(Integer siloId,String planta,Integer materialId);
 	public List<PedTrasladoArriboConfigDespachoDTO> findByPedTrasladoByConfDespacho(Integer siloId,Integer materialId,String fechaInicio,String fechaFin);
+	
+	Map<String, Double> sumConfirmadosHastaFecha(String claveSilo, String claveMaterial, String plantaDestino, LocalDate fecha);
+	Map<String, Double> sumConfirmadosEnFecha(String claveSilo, String claveMaterial, String plantaDestino, LocalDate fecha);
+	Map<String, Double> sumProgramadosDesdeFecha(String claveSilo, String claveMaterial, String plantaDestino, LocalDate fecha);
+
 }

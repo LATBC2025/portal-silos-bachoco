@@ -57,6 +57,8 @@ export class ReportePedidoTrasladoComponent implements OnInit {
   //LISTAS DE CATALOGO
   listSilo: SiloResponse[] = [];
   listMateriales: MaterialResponse[] = [];
+
+  showSaldoInfo = false;
   private datosCompartidosService = inject(DowloadDataService);
   //
   isSeccesPedCompra: number = 0;
@@ -186,7 +188,7 @@ export class ReportePedidoTrasladoComponent implements OnInit {
               this.utilService.showMessageError("Hubo un error en el sistema");
               this.isSeccesPedCompra = -1;
           }
-          // En el catch, 'error' ya es el objeto de error. 
+          // En el catch, 'error' ya es el objeto de error.
           // Acceder a 'error["error"]' es común con HttpClient en caso de errores HTTP.
           console.log("ERROR PEDIDO COMPRA: " + JSON.stringify(err));
         }
@@ -231,6 +233,9 @@ export class ReportePedidoTrasladoComponent implements OnInit {
         if (response) {
           if (response.length > 0) {
             this.listaPedidoTrasladoRequest = response;
+            this.showSaldoInfo = this.listaPedidoTrasladoRequest.some(x => x.saldoSeLiberaManana === true);
+
+
             this.datosCompartidosService.establecerDatosPedTraslado(true);
             this.refreshPedidos();
             this.collectionSize = this.listaPedidoTrasladoRequest.length;
@@ -257,7 +262,7 @@ export class ReportePedidoTrasladoComponent implements OnInit {
           }else{
             this.utilService.showMessageError("Hubo error en el servidor o conexión a SAP.");
           }
-          // En el catch, 'error' ya es el objeto de error. 
+          // En el catch, 'error' ya es el objeto de error.
           // Acceder a 'error["error"]' es común con HttpClient en caso de errores HTTP.
           console.log("ERROR PEDIDO TRASLADO findAllPedidosTraslado: " + JSON.stringify(error));
         }
@@ -270,6 +275,7 @@ export class ReportePedidoTrasladoComponent implements OnInit {
   clearListas(){
     this.listaPedidoTrasladoRequest=[];
     this.listaPedidoTrasladoRequestFilter=[];
+    this.showSaldoInfo = false;
     this.cdr.detectChanges();
   }
 

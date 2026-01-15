@@ -1,9 +1,11 @@
 package com.bachoco.persistence.adapter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -299,6 +301,28 @@ public class PedidoTrasladoJdbcRepositoryAdapter implements PedidoTrasladoJdbcRe
 		    .filter(nombre -> !pedCompraDB.contains(nombre))
 		    .collect(Collectors.toSet());
 		return pedCompraNoExisten.stream().collect(Collectors.toList());
+	}
+
+	@Override
+	public Map<String, Double> sumConfirmadosHastaFecha(String claveSilo, String claveMaterial, String plantaDestino,
+			LocalDate fecha) {
+		// TODO Auto-generated method stub
+	    return pedidoTrasladoJdbcRepository.sumConfirmadosHastaFecha(claveSilo, claveMaterial, plantaDestino, fecha);
+	}
+
+	@Override
+	public Map<String, Double> sumConfirmadosEnFecha(String claveSilo, String claveMaterial, String plantaDestino,
+			LocalDate fecha) {
+		// TODO Auto-generated method stub
+	    return pedidoTrasladoJdbcRepository.sumConfirmadosEnFecha(claveSilo, claveMaterial, plantaDestino, fecha);
+
+	}
+
+	@Override
+	public Map<String, Double> sumProgramadosDesdeFecha(String claveSilo, String claveMaterial, String plantaDestino,
+			LocalDate fecha) {
+		// TODO Auto-generated method stub
+	    return pedidoTrasladoJdbcRepository.sumProgramadosDesdeFecha(claveSilo, claveMaterial, plantaDestino, fecha);
 	}
 
 }

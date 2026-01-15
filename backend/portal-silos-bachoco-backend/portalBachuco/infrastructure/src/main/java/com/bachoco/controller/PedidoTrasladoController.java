@@ -24,10 +24,20 @@ public class PedidoTrasladoController {
 		this.pedidoTrasladoJdbcUseCase = pedidoTrasladoJdbcUseCase;
 	}
 	
+	/*
+		@GetMapping("/filters")
+		public ResponseEntity<List<PedidoTrasladoDTO>> findAllByFilters(@RequestParam String claveSilo,@RequestParam String claveMaterial,
+				@RequestParam String plantaDestino,@RequestParam String fechaInicio,@RequestParam String fechaFin){
+			List<PedidoTrasladoDTO> response=this.pedidoTrasladoJdbcUseCase.findByFilters(claveSilo, claveMaterial,plantaDestino, fechaInicio, fechaFin);
+			return new ResponseEntity<>(response,HttpStatus.OK);
+		}
+		*/
+	
+	//En este endpoi8nt se agrega la lógica para agregar el saldo
 	@GetMapping("/filters")
 	public ResponseEntity<List<PedidoTrasladoDTO>> findAllByFilters(@RequestParam String claveSilo,@RequestParam String claveMaterial,
 			@RequestParam String plantaDestino,@RequestParam String fechaInicio,@RequestParam String fechaFin){
-		List<PedidoTrasladoDTO> response=this.pedidoTrasladoJdbcUseCase.findByFilters(claveSilo, claveMaterial,plantaDestino, fechaInicio, fechaFin);
+		List<PedidoTrasladoDTO> response=this.pedidoTrasladoJdbcUseCase.findByFiltersToLiberarSaldo(claveSilo, claveMaterial,plantaDestino, fechaInicio, fechaFin);
 		return new ResponseEntity<>(response,HttpStatus.OK);
 	}
 	

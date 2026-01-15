@@ -79,6 +79,16 @@
         <button class="btn-custom" (click)="findAllPedidosTraslado()">Buscar</button>
       </div>
     </div>
+
+<!-- ✅ Mensaje informativo (saldo se libera mañana) -->
+    @if (showSaldoInfo) {
+      <div class="alert alert-info mt-2" role="alert">
+        ℹ️ Algunos pedidos tienen confirmaciones del día de hoy.
+        El saldo para reprogramación se libera a partir de mañana.
+      </div>
+    }
+
+
     <div class="scroll-lista">
       <table class="table table-striped" style="min-width: 2500px;">
         <thead>
@@ -88,6 +98,10 @@
             <th scope="col">Pedido Traslado</th>
             <th scope="col">Cantidad pedido</th>
             <th scope="col">Cantidad Traslado</th>
+            <!-- ✅ NUEVAS COLUMNAS -->
+            <th scope="col">Cantidad Embarcada Real</th>
+            <th scope="col">Cantidad Pendiente por Programar</th>
+
             <th scope="col">Cantidad Recibida</th>
             <th scope="col">Cantidad Pendiente Traslado</th>
             <th scope="col">Pedido Compras Asociado</th>
@@ -102,6 +116,10 @@
             <td>{{ pedidoTraslado.numPedidoTraslado }}</td>
             <td>{{ pedidoTraslado.cantidadPedido }}</td>
             <td>{{ pedidoTraslado.cantidadTraslado }}</td>
+            <!-- ✅ NUEVAS COLUMNAS -->
+              <td>{{ (pedidoTraslado.cantidadEmbarcadaReal ?? 0) | number:'1.0-0' }}</td>
+              <td>{{ (pedidoTraslado.cantidadPendientePorProgramar ?? 0) | number:'1.0-0' }}</td>
+
             <td>{{ pedidoTraslado.cantidadRecibidaPa }}</td>
             <td>{{ pedidoTraslado.cantidadPendienteTraslado }}</td>
             <td>{{ pedidoTraslado.numCompraAsociado }}</td>

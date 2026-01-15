@@ -8,4 +8,10 @@ export interface PedidoTrasladoResponse {
     cantidadPendienteTraslado: number;
     numCompraAsociado:         string;
     trasladosPendFact:         number;
+
+    // ✅ NUEVOS
+  cantidadEmbarcadaReal?: number;
+  cantidadPendientePorProgramar?: number;
+  saldoSeLiberaManana?: boolean;
+
 }

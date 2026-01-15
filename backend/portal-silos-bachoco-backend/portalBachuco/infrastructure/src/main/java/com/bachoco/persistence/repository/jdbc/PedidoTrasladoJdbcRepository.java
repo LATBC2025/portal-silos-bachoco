@@ -365,4 +365,95 @@ public class PedidoTrasladoJdbcRepository {
 			return false;
 		}
 	}
+	
+	private Map<String, Double> queryToMap(String sql, Map<String, Object> params) {
+	    return namedParameterJdbcTemplate.query(sql, params, rs -> {
+	        Map<String, Double> map = new HashMap<>();
+	        while (rs.next()) {
+	            map.put(rs.getString("key"), rs.getDouble("total"));
+	        }
+	        return map;
+	    });
+	}
+	
+	public Map<String, Double> sumConfirmadosHastaFecha(
+	        String claveSilo, String claveMaterial, String plantaDestino, java.time.LocalDate fecha) {
+
+	    String sql = """
+	        SELECT pt.NUMERO_PED_TRASLADO AS 'key',
+	               COALESCE(SUM(da.CANTIDAD), 0) AS total
+	        FROM tc_pedido_traslado pt
+	        JOIN tc_silo s ON pt.TC_SILO_ID = s.SILO_ID
+	        JOIN tc_material m ON pt.TC_MATERIAL_ID = m.MATERIAL_ID
+	        JOIN tc_detalle_arribo da ON da.TC_PEDIDO_TRASLADO_ID = pt.PEDIDO_TRASLADO_ID
+	        WHERE (s.SILO_NOMBRE = :silo OR s.SILO_CLAVE = :silo)
+	          AND (m.NUMERO_MATERIAL = :material OR m.MATERIAL_DESCRIPCION = :material)
+	          AND (:plantaDestino IS NULL OR :plantaDestino = '' OR pt.PLANTA_DESTINO = :plantaDestino)
+	          AND DATE(da.FECHA_PROGRAMADA) <= :fecha
+	        GROUP BY pt.NUMERO_PED_TRASLADO
+	    """;
+
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("silo", claveSilo);
+	    params.put("material", claveMaterial);
+	    params.put("plantaDestino", plantaDestino);
+	    params.put("fecha", java.sql.Date.valueOf(fecha));
+
+	    return queryToMap(sql, params);
+	}
+	
+	public Map<String, Double> sumConfirmadosEnFecha(
+	        String claveSilo, String claveMaterial, String plantaDestino, java.time.LocalDate fecha) {
+
+	    String sql = """
+	        SELECT pt.NUMERO_PED_TRASLADO AS 'key',
+	               COALESCE(SUM(da.CANTIDAD), 0) AS total
+	        FROM tc_pedido_traslado pt
+	        JOIN tc_silo s ON pt.TC_SILO_ID = s.SILO_ID
+	        JOIN tc_material m ON pt.TC_MATERIAL_ID = m.MATERIAL_ID
+	        JOIN tc_detalle_arribo da ON da.TC_PEDIDO_TRASLADO_ID = pt.PEDIDO_TRASLADO_ID
+	        WHERE (s.SILO_NOMBRE = :silo OR s.SILO_CLAVE = :silo)
+	          AND (m.NUMERO_MATERIAL = :material OR m.MATERIAL_DESCRIPCION = :material)
+	          AND (:plantaDestino IS NULL OR :plantaDestino = '' OR pt.PLANTA_DESTINO = :plantaDestino)
+	          AND DATE(da.FECHA_PROGRAMADA) = :fecha
+	        GROUP BY pt.NUMERO_PED_TRASLADO
+	    """;
+
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("silo", claveSilo);
+	    params.put("material", claveMaterial);
+	    params.put("plantaDestino", plantaDestino);
+	    params.put("fecha", java.sql.Date.valueOf(fecha));
+
+	    return queryToMap(sql, params);
+	}
+
+	public Map<String, Double> sumProgramadosDesdeFecha(
+	        String claveSilo, String claveMaterial, String plantaDestino, java.time.LocalDate fecha) {
+
+	    String sql = """
+	        SELECT pt.NUMERO_PED_TRASLADO AS 'key',
+	               COALESCE(SUM(da.CANTIDAD), 0) AS total
+	        FROM tc_pedido_traslado pt
+	        JOIN tc_silo s ON pt.TC_SILO_ID = s.SILO_ID
+	        JOIN tc_material m ON pt.TC_MATERIAL_ID = m.MATERIAL_ID
+	        JOIN tc_detalle_arribo da ON da.TC_PEDIDO_TRASLADO_ID = pt.PEDIDO_TRASLADO_ID
+	        WHERE (s.SILO_NOMBRE = :silo OR s.SILO_CLAVE = :silo)
+	          AND (m.NUMERO_MATERIAL = :material OR m.MATERIAL_DESCRIPCION = :material)
+	          AND (:plantaDestino IS NULL OR :plantaDestino = '' OR pt.PLANTA_DESTINO = :plantaDestino)
+	          AND DATE(da.FECHA_PROGRAMADA) >= :fecha
+	        GROUP BY pt.NUMERO_PED_TRASLADO
+	    """;
+
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("silo", claveSilo);
+	    params.put("material", claveMaterial);
+	    params.put("plantaDestino", plantaDestino);
+	    params.put("fecha", java.sql.Date.valueOf(fecha));
+
+	    return queryToMap(sql, params);
+	}
+
+
+
 }
