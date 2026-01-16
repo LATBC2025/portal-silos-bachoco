@@ -36,121 +36,140 @@ public class EmpleadoExternoJdbcRepository {
 		this.dataSource = dataSource;
 	}
 	
-	public List<EmpleadoExternoResponse> findAll(){
-		String sql = """
-				 SELECT
-				    e.EMPLEADO_ID,
-					e.NOMBRE,
-			        e.CORREO,
-			        e.TIPO_EMPLEADO,
-				    ex.RFC,
-				    ex.TC_SILO_ID
-			    FROM tc_empleado e
-			    JOIN tc_empleado_externo ex on e.EMPLEADO_ID=ex.TC_EMPLEADO_ID
-			    JOIN tc_usuario u on e.TC_USUARIO_ID=u.USUARIO_ID
-			     where e.TIPO_EMPLEADO=2
-			    and (u.USUARIO_TIPO=2 OR u.USUARIO_TIPO=3)
-			    and e.ESTATUS = '1'
-			    GROUP BY 
-			    e.EMPLEADO_ID,
-					e.NOMBRE,
-			        e.CORREO,
-			        e.TIPO_EMPLEADO,
-			        ex.RFC,
-				    ex.TC_SILO_ID
-				    """;
-		
-		return jdbcTemplate.query(sql, new RowMapper<EmpleadoExternoResponse>() {
-            @Override
-            public EmpleadoExternoResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
-            	EmpleadoExternoResponse p = new EmpleadoExternoResponse();
-                p.setId(rs.getInt("EMPLEADO_ID"));
-                p.setNombre(rs.getString("NOMBRE"));
-                p.setRfc(rs.getString("RFC"));;
-                p.setCorreo(rs.getString("CORREO"));
-                p.setSiloId(rs.getInt("TC_SILO_ID"));
-                return p;
-            }
-        });
-	}
-	
-	public List<EmpleadoExternoResponse> findAllBySilo(Integer siloId) {
+	public List<EmpleadoExternoResponse> findAll() {
+
 	    String sql = """
-	         SELECT
+	        SELECT
 	            e.EMPLEADO_ID,
 	            e.NOMBRE,
+	            e.NUMERO_PROVEEDOR,   
 	            e.CORREO,
 	            e.TIPO_EMPLEADO,
 	            ex.RFC,
 	            ex.TC_SILO_ID
-	         FROM tc_empleado e
-	         JOIN tc_empleado_externo ex ON e.EMPLEADO_ID = ex.TC_EMPLEADO_ID
-	         JOIN tc_usuario u ON e.TC_USUARIO_ID = u.USUARIO_ID
-	         WHERE e.TIPO_EMPLEADO = 2
-	           AND (u.USUARIO_TIPO = 2 OR u.USUARIO_TIPO = 3)
-	           AND e.ESTATUS = '1'
-	           AND ex.TC_SILO_ID = ?
-	         GROUP BY
+	        FROM tc_empleado e
+	        JOIN tc_empleado_externo ex ON e.EMPLEADO_ID = ex.TC_EMPLEADO_ID
+	        JOIN tc_usuario u ON e.TC_USUARIO_ID = u.USUARIO_ID
+	        WHERE e.TIPO_EMPLEADO = 2
+	          AND (u.USUARIO_TIPO = 2 OR u.USUARIO_TIPO = 3)
+	          AND e.ESTATUS = '1'
+	        GROUP BY
 	            e.EMPLEADO_ID,
 	            e.NOMBRE,
+	            e.NUMERO_PROVEEDOR,  
 	            e.CORREO,
 	            e.TIPO_EMPLEADO,
 	            ex.RFC,
 	            ex.TC_SILO_ID
 	        """;
 
-	    return jdbcTemplate.query(sql, new Object[]{siloId}, new RowMapper<EmpleadoExternoResponse>() {
+	    return jdbcTemplate.query(sql, new RowMapper<EmpleadoExternoResponse>() {
 	        @Override
 	        public EmpleadoExternoResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
 	            EmpleadoExternoResponse p = new EmpleadoExternoResponse();
 	            p.setId(rs.getInt("EMPLEADO_ID"));
 	            p.setNombre(rs.getString("NOMBRE"));
-	            p.setRfc(rs.getString("RFC"));
+	            p.setNumeroProveedor(rs.getString("NUMERO_PROVEEDOR")); // ✅ NUEVO
 	            p.setCorreo(rs.getString("CORREO"));
+	            p.setRfc(rs.getString("RFC"));
 	            p.setSiloId(rs.getInt("TC_SILO_ID"));
 	            return p;
 	        }
 	    });
 	}
 
-	
-	public EmpleadoExternoResponse findByCorreo(String correo){
-		String sql = """
-				    SELECT
-				        e.EMPLEADO_ID,
-						e.NOMBRE,
-				        e.CORREO,
-				        e.TIPO_EMPLEADO,
-				        ex.RFC,
-				        ex.TC_SILO_ID
-				    FROM tc_empleado e
-				    JOIN tc_usuario u ON e.TC_USUARIO_ID=u.USUARIO_ID
-				    JOIN tc_empleado_externo ex ON e.EMPLEADO_ID=ex.TC_EMPLEADO_ID
-				    where e.CORREO=?
-				    AND e.EMP_FECHA_BAJA is null AND e.ESTATUS<>'0'
-				    LIMIT 1;
-				    """;
-		
-		try {
-			return jdbcTemplate.queryForObject(sql,
-					new Object[] { correo }, new RowMapper<EmpleadoExternoResponse>() {
+	public List<EmpleadoExternoResponse> findAllBySilo(Integer siloId) {
+
+	    String sql = """
+	        SELECT
+	            e.EMPLEADO_ID,
+	            e.NOMBRE,
+	            e.NUMERO_PROVEEDOR,   
+	            e.CORREO,
+	            e.TIPO_EMPLEADO,
+	            ex.RFC,
+	            ex.TC_SILO_ID
+	        FROM tc_empleado e
+	        JOIN tc_empleado_externo ex ON e.EMPLEADO_ID = ex.TC_EMPLEADO_ID
+	        JOIN tc_usuario u ON e.TC_USUARIO_ID = u.USUARIO_ID
+	        WHERE e.TIPO_EMPLEADO = 2
+	          AND (u.USUARIO_TIPO = 2 OR u.USUARIO_TIPO = 3)
+	          AND e.ESTATUS = '1'
+	          AND ex.TC_SILO_ID = ?
+	        GROUP BY
+	            e.EMPLEADO_ID,
+	            e.NOMBRE,
+	            e.NUMERO_PROVEEDOR,  
+	            e.CORREO,
+	            e.TIPO_EMPLEADO,
+	            ex.RFC,
+	            ex.TC_SILO_ID
+	        """;
+
+	    return jdbcTemplate.query(
+	        sql,
+	        new Object[]{siloId},
+	        new RowMapper<EmpleadoExternoResponse>() {
 	            @Override
 	            public EmpleadoExternoResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
-	            	EmpleadoExternoResponse p = new EmpleadoExternoResponse();
+	                EmpleadoExternoResponse p = new EmpleadoExternoResponse();
 	                p.setId(rs.getInt("EMPLEADO_ID"));
 	                p.setNombre(rs.getString("NOMBRE"));
-	                p.setRfc(rs.getString("RFC"));;
+	                p.setNumeroProveedor(rs.getString("NUMERO_PROVEEDOR")); // ✅ NUEVO
 	                p.setCorreo(rs.getString("CORREO"));
+	                p.setRfc(rs.getString("RFC"));
 	                p.setSiloId(rs.getInt("TC_SILO_ID"));
 	                return p;
 	            }
-	        });
-		}catch (EmptyResultDataAccessException e) {
-			return null;
-		}
-		
+	        }
+	    );
 	}
+
+
 	
+	public EmpleadoExternoResponse findByCorreo(String correo) {
+
+	    String sql = """
+	        SELECT
+	            e.EMPLEADO_ID,
+	            e.NOMBRE,
+	            e.NUMERO_PROVEEDOR,  
+	            e.CORREO,
+	            e.TIPO_EMPLEADO,
+	            ex.RFC,
+	            ex.TC_SILO_ID
+	        FROM tc_empleado e
+	        JOIN tc_usuario u ON e.TC_USUARIO_ID = u.USUARIO_ID
+	        JOIN tc_empleado_externo ex ON e.EMPLEADO_ID = ex.TC_EMPLEADO_ID
+	        WHERE e.CORREO = ?
+	          AND e.EMP_FECHA_BAJA IS NULL
+	          AND e.ESTATUS <> '0'
+	        LIMIT 1
+	        """;
+
+	    try {
+	        return jdbcTemplate.queryForObject(
+	            sql,
+	            new Object[]{correo},
+	            new RowMapper<EmpleadoExternoResponse>() {
+	                @Override
+	                public EmpleadoExternoResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
+	                    EmpleadoExternoResponse p = new EmpleadoExternoResponse();
+	                    p.setId(rs.getInt("EMPLEADO_ID"));
+	                    p.setNombre(rs.getString("NOMBRE"));
+	                    p.setNumeroProveedor(rs.getString("NUMERO_PROVEEDOR")); // ✅ NUEVO
+	                    p.setCorreo(rs.getString("CORREO"));
+	                    p.setRfc(rs.getString("RFC"));
+	                    p.setSiloId(rs.getInt("TC_SILO_ID"));
+	                    return p;
+	                }
+	            }
+	        );
+	    } catch (EmptyResultDataAccessException e) {
+	        return null;
+	    }
+	}
+
 	public void update(Integer id,EmpleadoExternoRequest request) {
 		 simpleJdbcCall = new SimpleJdbcCall(dataSource)
 	                .withProcedureName("sp_update_empleado_externo");
@@ -159,6 +178,7 @@ public class EmpleadoExternoJdbcRepository {
 		                Map.of(
 		                		"p_empleado_id", id,
 		                        "p_nombre", request.getNombre(),
+		                        "p_numero_proveedor", request.getNumeroProveedor(),
 		                        "p_rfc", request.getRfc(),
 		                        "p_correo", request.getCorreo(),
 		                        "p_usuario", request.getUsuario(),
@@ -217,6 +237,7 @@ public class EmpleadoExternoJdbcRepository {
 			 Map<String, Object> result = simpleJdbcCall.execute(
 		                Map.of(
 		                        "p_nombre", request.getNombre(),
+		                        "p_numero_proveedor", request.getNumeroProveedor(),
 		                        "p_rfc", request.getRfc(),
 		                        "p_correo", request.getCorreo(),
 		                        "p_usuario", request.getCorreo(),
@@ -238,6 +259,7 @@ public class EmpleadoExternoJdbcRepository {
 			response.setId(id);
 			response.setCorreo(request.getCorreo());
 			response.setNombre(request.getNombre());
+			response.setNumeroProveedor(request.getNumeroProveedor());
 			response.setRfc(request.getRfc());
 			response.setUsuario(request.getUsuario());
 			response.setSiloId(Integer.parseInt(request.getSiloId()));

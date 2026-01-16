@@ -247,10 +247,9 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
       nombre: item.nombre,
       rfc: item.rfc,
       correo: item.correo,
-      siloId: item.siloId,
+      siloId: String(item.siloId),      //  CLAVE
       sapVendor: (item as any).sapVendor ?? '', // temporal
-      bodegasIds: [] // por ahora
-    });
+      bodegasIds: (item as any).bodegasIds ?? []    });
   }
 
   loadBodegasBySilo(siloId: number) {

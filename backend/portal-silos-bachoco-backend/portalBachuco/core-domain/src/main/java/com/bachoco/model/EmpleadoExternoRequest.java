@@ -3,6 +3,7 @@ package com.bachoco.model;
 public class EmpleadoExternoRequest {
 
 	private String nombre;
+	private String numeroProveedor;
 	private String rfc;
 	private String correo;
 	private String usuario;
@@ -11,8 +12,9 @@ public class EmpleadoExternoRequest {
 	public EmpleadoExternoRequest() {
 	}
 
-	public EmpleadoExternoRequest(String nombre, String rfc, String correo, String usuario, String siloId) {
+	public EmpleadoExternoRequest(String nombre,String numeroProveedor, String rfc, String correo, String usuario, String siloId) {
 		this.nombre = nombre;
+		this.numeroProveedor = numeroProveedor;
 		this.rfc = rfc;
 		this.correo = correo;
 		this.usuario = usuario;
@@ -58,5 +60,14 @@ public class EmpleadoExternoRequest {
 	public void setSiloId(String siloId) {
 		this.siloId = siloId;
 	}
+
+	public String getNumeroProveedor() {
+		return numeroProveedor;
+	}
+
+	public void setNumeroProveedor(String numeroProveedor) {
+		this.numeroProveedor = numeroProveedor;
+	}
+	
 	
 }

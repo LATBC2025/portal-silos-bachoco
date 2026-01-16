@@ -344,7 +344,7 @@ export class ReportePedidoTrasladoComponent implements OnInit {
       "Pedido Traslado": x.numPedidoTraslado ?? "",
       "Cantidad pedido": x.cantidadPedido ?? 0,
       "Cantidad Traslado": x.cantidadTraslado ?? 0,
-      "Cantidad Embarcada Real": x.cantidadEmbarcadaReal ?? 0,
+      "Cantidad Programada": x.cantidadEmbarcadaReal ?? 0,
       "Cantidad Pendiente por Programar": x.cantidadPendientePorProgramar ?? 0,
       "Cantidad Recibida": x.cantidadRecibidaPa ?? 0,
       "Cantidad Pendiente Traslado": x.cantidadPendienteTraslado ?? 0,

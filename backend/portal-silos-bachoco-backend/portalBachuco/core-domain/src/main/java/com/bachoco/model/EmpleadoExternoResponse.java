@@ -4,6 +4,7 @@ public class EmpleadoExternoResponse {
 
 	private Integer id;
 	private String nombre;
+	private String numeroProveedor;
 	private String rfc;
 	private String correo;
 	private String usuario;
@@ -12,10 +13,11 @@ public class EmpleadoExternoResponse {
 	public EmpleadoExternoResponse() {
 	}
 
-	public EmpleadoExternoResponse(Integer id, String nombre, String rfc, String correo, String usuario,
+	public EmpleadoExternoResponse(Integer id, String nombre,String numeroProveedor, String rfc, String correo, String usuario,
 			Integer siloId) {
 		this.id = id;
 		this.nombre = nombre;
+		this.numeroProveedor=numeroProveedor;
 		this.rfc = rfc;
 		this.correo = correo;
 		this.usuario = usuario;
@@ -69,5 +71,14 @@ public class EmpleadoExternoResponse {
 	public void setSiloId(Integer siloId) {
 		this.siloId = siloId;
 	}
+
+	public String getNumeroProveedor() {
+		return numeroProveedor;
+	}
+
+	public void setNumeroProveedor(String numeroProveedor) {
+		this.numeroProveedor = numeroProveedor;
+	}
+	
 	
 }
