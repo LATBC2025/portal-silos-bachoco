@@ -38,6 +38,9 @@ import { PedidoCompraResponse } from '../../models/PedidoCompraResponse';
 import { NumberFormatPipe } from '../../utils/formats/number-format.pipe';
 import { EmpleadoExternoService } from '../../services/emppleado-externo/empleado-externo.service';
 import { EmpleadoExternoResponseDTO } from '../../models/catalogs/Empleado-externo/Empleado.Response.DTO';
+import { ValidationErrors, ValidatorFn } from '@angular/forms';
+import { DateValidators } from '../../utils/validations/date-DateValidators ';
+
 
 @Component({
 	selector: 'app-programacion-arribo',
@@ -237,7 +240,7 @@ export class ProgramacionArriboComponent implements OnInit {
 					this.items.push(this.fb.group({
 						tonelada: [element["col-0"], [Validators.required, Validators.min(1)]],
 						material: [{ value: this.materialSeleccionado, disabled: true }, [Validators.required]],
-						fecha: [this.utilServ.excelSerialToDate(element["col-2"]), [Validators.required]]
+            fecha: [this.utilServ.excelSerialToDate(element["col-2"]), [Validators.required, DateValidators.fechaNoAnteriorAHoy()]]
 					}));
 				});
 				this.collectionSizeArribo = this.items.length;
@@ -268,7 +271,7 @@ private listenSiloChangeLoadProveedores(): void {
 
     // ✅ reset proveedor SOLO cuando cambia silo
     this.listProveedores = [];
-    this.formArriboFilter.patchValue({ proveedor: 0 }, { emitEvent: false });
+    this.formArriboFilter.patchValue({ proveedor: '0' }, { emitEvent: false });
 
     if (!siloId) return;
 
@@ -299,7 +302,7 @@ private listenSiloChangeLoadProveedores(): void {
 		return this.fb.group({
 			tonelada: [0, [Validators.required, Validators.min(1)]],
 			material: [{ value: this.materialSeleccionado, disabled: true }, [Validators.required]],
-			fecha: [this.getTodayAsString(), [Validators.required]]
+			fecha: [this.getTodayAsString(), [Validators.required, DateValidators.fechaNoAnteriorAHoy]]
 		});
 	}
 
@@ -479,6 +482,8 @@ private listenSiloChangeLoadProveedores(): void {
 		const plantaId = this.getValueNumber('planta');
 		const claveSilo = this.getClaveSiloById(siloId) ?? "";
 		const claveDestino = this.getPlantaDestinoById(plantaId) ?? "";
+    const proveedor: string = this.getValue('proveedor'); // ya te regresa string
+
 		//Conversión de Observable a Promesa y uso de async/await
 		try {
 			const claveMaterial: string = this.findClaveMaterialById(materialId);
@@ -493,7 +498,7 @@ private listenSiloChangeLoadProveedores(): void {
 			if (response != null && response != undefined && response != "0") {
 				this.stockSilo = response;
 				await this.findAllPedidoTraslado(siloId.toString(),
-					this.findClavePlantaById(plantaId), materialId.toString());
+					this.findClavePlantaById(plantaId), materialId.toString(),proveedor);
 			} else {
 				this.listProgramPedTraslado = [];
 				this.listProgramPedTrasladoFilter = [];
@@ -588,9 +593,9 @@ private listenSiloChangeLoadProveedores(): void {
 	}
 
 	//extracion de pedidos traslado para programar arribos
-	async findAllPedidoTraslado(claveSilo: string, clavePlanta: string, claveMaterial: string): Promise<void> {
+	async findAllPedidoTraslado(claveSilo: string, clavePlanta: string, claveMaterial: string, proveedor: string): Promise<void> {
 		const pedidoTrasladoPromise = lastValueFrom(
-			this.programArriboServ.findPedidosTralados(claveSilo, clavePlanta, claveMaterial)
+			this.programArriboServ.findPedidosTralados(claveSilo, clavePlanta, claveMaterial, proveedor)
 		);
 		try {
 			const response: ProgramPedTrasladoResponse[] = await pedidoTrasladoPromise;
@@ -640,7 +645,7 @@ private listenSiloChangeLoadProveedores(): void {
 		return this.fb.group({
 			tonelada: [tonelada, [Validators.required, Validators.min(1)]],
 			material: [material, Validators.required],
-			fecha: [fecha, Validators.required],
+			fecha: [fecha, [Validators.required, DateValidators.fechaNoAnteriorAHoy()]],
 		});
 	}
 	public agregarItem(tonelada?: number, material?: number, fecha?: string): void {
@@ -697,6 +702,7 @@ private listenSiloChangeLoadProveedores(): void {
 		const siloId = this.getValueNumber("silo");
 		const materialId = this.getValueNumber("material");
 		const plantaId = this.getValueNumber("planta");
+    const numeroProveedor: string = this.getValue('proveedor'); // NUEVO
 		const pedSeleccionado = this.extractPedTrasladoSelect();
 		const listProgramRequest: ProgramArriboRequest[] = this.listaDeObjetosProgram.map(program => {
 			return {
@@ -708,7 +714,9 @@ private listenSiloChangeLoadProveedores(): void {
 				materialId: materialId,
 				plantaId: plantaId,
 				pedidoTrasladoId: pedSeleccionado?.pedidoTrasladoId,
-				isRestaCantidad: esResta ? 'R' : 'P'
+				isRestaCantidad: esResta ? 'R' : 'P',
+
+        numeroProveedor // NUEVO
 			} as ProgramArriboRequest;
 		});
 		if (listProgramRequest.length > 0) {
@@ -1087,15 +1095,16 @@ private listenSiloChangeLoadProveedores(): void {
 		};
 	}
 
-	// 🔥 MEJORADO: Build request - SOLO UN pedido debe tener 'R'
+	//  MEJORADO: Build request - SOLO UN pedido debe tener 'R'
 	private buildRequestConRestasOptimizadas(pedidosSeleccionados: any[], ajuste: any) {
 		const siloId = this.getValueNumber("silo");
 		const materialId = this.getValueNumber("material");
 		const plantaId = this.getValueNumber("planta");
+     const numeroProveedor: string = this.getValue('proveedor');
 
 		const listProgramRequest: ProgramArriboRequest[] = [];
 
-		// 🔥 CORREGIDO: Asignar SOLO UN pedido para las programaciones
+		//  CORREGIDO: Asignar SOLO UN pedido para las programaciones
 		if (pedidosSeleccionados.length > 0) {
 			const pedidoPrincipal = pedidosSeleccionados[0]; // Usar solo el primer pedido
 
@@ -1113,7 +1122,8 @@ private listenSiloChangeLoadProveedores(): void {
 					materialId: materialId,
 					plantaId: plantaId,
 					pedidoTrasladoId: pedidoPrincipal.pedidoTrasladoId,
-					isRestaCantidad: esResta ? 'R' : 'P'
+					isRestaCantidad: esResta ? 'R' : 'P',
+          numeroProveedor
 				};
 
 				listProgramRequest.push(request);
@@ -1131,18 +1141,33 @@ private listenSiloChangeLoadProveedores(): void {
 				materialId: materialId,
 				plantaId: plantaId,
 				pedidoTrasladoId: ajuste.pedidoTrasladoId,
-				isRestaCantidad: 'R'
+				isRestaCantidad: 'R',
+        numeroProveedor
 			};
 			listProgramRequest.push(requestAjuste);
 		}
 
-		console.log('📦 REQUESTS A GUARDAR:', listProgramRequest);
+		console.log(' REQUESTS A GUARDAR:', listProgramRequest);
 
 		if (listProgramRequest.length > 0) {
 			this.saveProgramArribo(listProgramRequest);
 		}
 	}
 
+  private notPastDateValidator(): ValidatorFn {
+  return (control: any): ValidationErrors | null => {
+    const value = control?.value;
+    if (!value) return null;
+
+    const selected = new Date(`${value}T00:00:00`);
+    if (isNaN(selected.getTime())) return { invalidDate: true };
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return selected < today ? { datePast: true } : null;
+  };
+}
 }
 
 

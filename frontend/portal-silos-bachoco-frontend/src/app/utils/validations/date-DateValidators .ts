@@ -28,6 +28,38 @@ static noFutura(mensaje?: string): ValidatorFn {
     }
   };
 }
+static fechaNoAnteriorAHoy(mensaje?: string): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value) return null;
+
+    // value viene como "YYYY-MM-DD"
+    const [y, m, d] = String(value).split('-').map(Number);
+    if (!y || !m || !d) return { fechaInvalida: true };
+
+    // Fecha seleccionada a medianoche LOCAL
+    const fechaControl = new Date(y, m - 1, d);
+    fechaControl.setHours(0, 0, 0, 0);
+
+    // Hoy a medianoche LOCAL
+    const fechaHoy = new Date();
+    fechaHoy.setHours(0, 0, 0, 0);
+
+    // Solo invalida si es menor a hoy
+    if (fechaControl < fechaHoy) {
+      return {
+        fechaAnterior: {
+          message: mensaje || 'La fecha no puede ser anterior a hoy',
+          value,
+          fechaMinimaPermitida: fechaHoy.toISOString().split('T')[0]
+        }
+      };
+    }
+
+    return null;
+  };
+}
+
 
  static fechaNoFuturaValidator(mensaje?: string): ValidatorFn {
    return (control: AbstractControl): ValidationErrors | null => {

@@ -51,6 +51,8 @@ public class PedidoTrasladoSapWebClientoAdapter implements PedidoTrasladoSapPort
 		}
 		try {
 			String jsonResponse = client.get(endpoint);
+			System.out.println("*******RESPUESTA DE PETICION A PEDIDO-TRASLADO SAP***********");
+			//System.out.println("RESPONSE: "+jsonResponse);
 			boolean isValidJson = UrlConnectionUtil.isValidJsonResponse(jsonResponse);
 			if (isValidJson == false) {
 				logger.warn("Respuesta de SAP vacía (posiblemente sin datos para los filtros).");

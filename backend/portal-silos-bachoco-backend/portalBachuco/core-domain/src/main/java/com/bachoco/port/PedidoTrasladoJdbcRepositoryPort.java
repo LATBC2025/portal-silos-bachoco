@@ -13,7 +13,7 @@ public interface PedidoTrasladoJdbcRepositoryPort {
 	public List<PedidoTrasladoDTO> findByFilterSiloAndMaterialAnFecha(String claveSilo,String claveMaterial,String plantaDestino,String fechaInicio,String fechaFin);
 	public void executeDowloadPedTrasladoBySap(String claveSilo,String claveMaterial,String plantaDestino,String fechaInicio,String fechaFin);
 	public List<PedidoTrasladoDTO> findByFiltersCantidadDisponible(Integer siloId,Integer materialId,String fechaInicio,String fechaFin);
-	public List<PedidoTrasladoArriboDTO> findByFilterProgramArribo(Integer siloId,String planta,Integer materialId);
+	public List<PedidoTrasladoArriboDTO> findByFilterProgramArribo(Integer siloId,String planta,Integer materialId,String proveedor);
 	public List<PedTrasladoArriboConfigDespachoDTO> findByPedTrasladoByConfDespacho(Integer siloId,Integer materialId,String fechaInicio,String fechaFin);
 	
 	Map<String, Double> sumConfirmadosHastaFecha(String claveSilo, String claveMaterial, String plantaDestino, LocalDate fecha);

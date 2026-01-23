@@ -8,51 +8,75 @@
     </div>
     <form [formGroup]="formReporteArribo">
       <div class="row mb-3">
-        <div class="col-md-3">
-          <label for="silo" class="form-label text-label">Silo</label>
-          <select class="form-select" [(ngModel)]="opcionSeleccionada" formControlName="siloId" id="silo">
-            <option value="0">Seleccionar</option>
-            @for(item of listSilo;track item.id){
-            <option [value]="item.id">{{item.nombre}}</option>
-            }
-          </select>
-          <div class="text-danger size-text-error">
-            @if (formReporteArribo.get('siloId')?.invalid && formReporteArribo.get('siloId')?.touched) {
-              @if (formReporteArribo.get('siloId')?.errors?.['required']) {
-              Campo requerido.
+          <!-- SILO -->
+          <div class="col-md-3">
+            <label for="silo" class="form-label text-label">Silo</label>
+            <select class="form-select" [(ngModel)]="opcionSeleccionada" formControlName="siloId" id="silo">
+              <option value="0">Seleccionar</option>
+              @for(item of listSilo;track item.id){
+                <option [value]="item.id">{{item.nombre}}</option>
               }
-              @if (formReporteArribo.get('siloId')?.errors?.['zeroValue']) {
-             Campo requerido.
+            </select>
+
+            <div class="text-danger size-text-error">
+              @if (formReporteArribo.get('siloId')?.invalid && formReporteArribo.get('siloId')?.touched) {
+                @if (formReporteArribo.get('siloId')?.errors?.['required']) { Campo requerido. }
+                @if (formReporteArribo.get('siloId')?.errors?.['zeroValue']) { Campo requerido. }
               }
-            }
+            </div>
+          </div>
+
+          <!-- PROVEEDOR -->
+            <div class="col-md-3">
+              <label for="idProveedor" class="form-label text-label">Proveedor</label>
+
+              <select class="form-select" formControlName="idProveedor" id="idProveedor"
+                      [disabled]="listProveedores.length === 0">
+                <option value="0">Seleccionar</option>
+
+                @for(p of listProveedores; track p.numeroProveedor){
+                  <option [value]="p.numeroProveedor">
+                    {{ p.numeroProveedor }} - {{ p.nombre }}
+                  </option>
+                }
+              </select>
+
+              <div class="text-danger size-text-error">
+                @if (formReporteArribo.get('idProveedor')?.invalid && formReporteArribo.get('idProveedor')?.touched) {
+                  @if (formReporteArribo.get('idProveedor')?.errors?.['zeroValue']) {
+                    Campo requerido.
+                  }
+                }
+              </div>
+            </div>
+
+
+          <!-- FECHA INICIO -->
+          <div class="col-md-3">
+            <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+            <input type="date" class="form-control" formControlName="fechaI" id="fechaInicio">
+            <div class="text-danger size-text-error">
+              @if (formReporteArribo.get('fechaI')?.invalid && formReporteArribo.get('fechaI')?.touched) {
+                @if (formReporteArribo.get('fechaI')?.errors?.['required']) { Campo requerido. }
+              }
+            </div>
+          </div>
+
+          <!-- FECHA FIN -->
+          <div class="col-md-3">
+            <label for="fechaFin" class="form-label">Fecha Fin</label>
+            <input type="date" class="form-control" formControlName="fechaF" id="fechaFin">
+            <div class="text-danger size-text-error">
+              @if (formReporteArribo.get('fechaF')?.invalid && formReporteArribo.get('fechaF')?.touched) {
+                @if (formReporteArribo.get('fechaF')?.errors?.['required']) { Campo requerido. }
+                @else if (formReporteArribo.get('fechaF')?.errors?.['rangoFechaInvalido']) {
+                  Campo fecha fin no debe ser menor a fecha inicio.
+                }
+              }
+            </div>
           </div>
         </div>
-        <div class="col-md-4">
-          <label for="fechaInicio" class="form-label">Fecha Inicio</label>
-          <input type="date" class="form-control" formControlName="fechaI" id="fechaInicio">
-          <div class="text-danger size-text-error">
-            @if (formReporteArribo.get('fechaI')?.invalid && formReporteArribo.get('fechaI')?.touched) {
-              @if (formReporteArribo.get('fechaI')?.errors?.['required']) {
-              Campo requerido.
-              }
-            }
-          </div>
-        </div>
-        <div class="col-md-4">
-          <label for="fechaFin" class="form-label">Fecha Fin</label>
-          <input type="date" class="form-control" formControlName="fechaF" id="fechaFin">
-           <div class="text-danger size-text-error">
-            @if (formReporteArribo.get('fechaF')?.invalid && formReporteArribo.get('fechaF')?.touched) {
-              @if (formReporteArribo.get('fechaF')?.errors?.['required']) {
-               Campo requerido.
-              }
-              @else if (formReporteArribo.get('fechaF')?.errors?.['rangoFechaInvalido']) {
-                Campo fecha fin no debe ser menor a fecha inicio.
-            }
-            }
-          </div>
-        </div>
-      </div>
+
 
     </form>
 

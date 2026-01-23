@@ -39,13 +39,24 @@ public class ProgramArriboController {
 	@GetMapping("/pedido-traslado")
 	public ResponseEntity<List<PedidoTrasladoArriboDTO>> findPedidoTraslado(
 			@RequestParam String claveSilo,@RequestParam String clavePlanta,
-			@RequestParam String claveMaterial){
+			@RequestParam String claveMaterial  ,@RequestParam String proveedor){
+		Integer siloId=Integer.parseInt(claveSilo);
+		Integer materialId=Integer.parseInt(claveMaterial);
+		List<PedidoTrasladoArriboDTO> response=this.pedidoTrasladoJdbcUseCase.findByFilterProgramArribo(siloId,clavePlanta,materialId,proveedor);
+		return new ResponseEntity<List<PedidoTrasladoArriboDTO>>(response,HttpStatus.OK);
+	}
+	
+	/*
+	@GetMapping("/pedido-traslado")
+	public ResponseEntity<List<PedidoTrasladoArriboDTO>> findPedidoTraslado(
+			@RequestParam String claveSilo,@RequestParam String clavePlanta,
+			@RequestParam String claveMaterial, @RequestParam String proveedor){
 		Integer siloId=Integer.parseInt(claveSilo);
 		Integer materialId=Integer.parseInt(claveMaterial);
 		List<PedidoTrasladoArriboDTO> response=this.pedidoTrasladoJdbcUseCase.findByFilterProgramArribo(siloId,clavePlanta,materialId);
 		return new ResponseEntity<List<PedidoTrasladoArriboDTO>>(response,HttpStatus.OK);
 	}
-	
+	*/
 	@GetMapping("/findTotal-ProgramArriboByNumPedTraslado")
 	public ResponseEntity<Float> findPesoNetoByNumPedTraslado(
 			@RequestParam String numPedidoTraslados, @RequestParam String claveSilo,@RequestParam String claveMaterial,@RequestParam String clavePlanta,
@@ -56,6 +67,7 @@ public class ProgramArriboController {
 	
 	@PostMapping
 	public ResponseEntity<Void> saveProgramArivo(@RequestBody List<ProgramArriboRequest> req){
+		System.out.println("PROGRAMACIÓN ARRIBO________Ingresando a método para Programar Arribo | /v1/program-arribo/saveProgramArivo");
 		String response=this.programArriboUseCase.saveProgramArribo(req);
 		return new ResponseEntity<Void>(HttpStatus.OK);
 	}

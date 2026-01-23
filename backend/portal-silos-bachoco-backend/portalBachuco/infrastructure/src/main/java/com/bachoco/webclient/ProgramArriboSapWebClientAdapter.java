@@ -27,12 +27,15 @@ public class ProgramArriboSapWebClientAdapter implements ProgramArriboSapReposit
 
 	@Override
 	public Double stockSilo(String claveSilo,String material, String rutaUrl) {
+		System.out.println("***SE INGRESA AL MÉTODO PARA CONSULTAR stockSilo EN SAP***");
 		HttpUrlConnectionClient client=new HttpUrlConnectionClient(rutaUrl,
 				sapProperties.getUserName(),sapProperties.getPassWord());
 		 //String endpoint = String.format("/consulta-pedido-compra?Silo=%s&Param1=%s",claveSilo,"X");
 			String endpoint=WebClientUtils.buildUrlStockSilo(claveSilo,Integer.valueOf(material),true);
+			System.out.println("ENPOINT: "+endpoint);
 		 try {
 				String jsonResponse = client.get(endpoint);
+				System.out.println("RESPUESTA DE SAP: "+jsonResponse);
 				ObjectMapper objectMapper= new ObjectMapper();
 				int endIndex = Math.min(jsonResponse.length(), 15);
 			    String prefix = jsonResponse.substring(0, endIndex).trim();
@@ -43,6 +46,7 @@ public class ProgramArriboSapWebClientAdapter implements ProgramArriboSapReposit
 				objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
 				StockSiloResponse response= objectMapper.readValue(jsonResponse, StockSiloResponse.class);
 				if(response.getStockSilo()!=null) {
+					System.out.println("***FINALIZA CONSULTA stockSilo EN SAP***");
 					return Double.parseDouble(response.getStockSilo());
 				}
 				return null;

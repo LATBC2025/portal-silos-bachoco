@@ -15,5 +15,5 @@ public interface ConfirmacionDespachoJdbcRepository {
 	public ConfirmacionDespachoResponse delete(ConfirmacionDespachoRequest req);
 	public ConfirmacionDespachoResponse esIgualPesosPorId(ConfDespachoPesosRequest req);
 	public Float findCantidadPromediotrasporte(Integer siloId);
-	public List<ConfirmDespachoResponse> findAllConfirmacionDespacho(String silo,String material,String fechaInicio,String fechaFin);
+	public List<ConfirmDespachoResponse> findAllConfirmacionDespacho(String silo,String material,String fechaInicio,String fechaFin,String proveedor);
 }

@@ -8,18 +8,20 @@ public class ReportePorgramArribo {
 	private String fecha;
 	private String numeroPedido;
 	private String destinoPlanta;
+	private String nombreProveedor;
 	
 	public ReportePorgramArribo() {
 	}
 
 	public ReportePorgramArribo(Integer id, Float toneladas, String material, String fecha, String numeroPedido,
-			String destinoPlanta) {
+			String destinoPlanta,String nombreProveedor) {
 		this.id = id;
 		this.toneladas = toneladas;
 		this.material = material;
 		this.fecha = fecha;
 		this.numeroPedido = numeroPedido;
 		this.destinoPlanta = destinoPlanta;
+		this.nombreProveedor = nombreProveedor;
 	}
 
 	public Integer getId() {
@@ -69,5 +71,15 @@ public class ReportePorgramArribo {
 	public void setDestinoPlanta(String destinoPlanta) {
 		this.destinoPlanta = destinoPlanta;
 	}
+
+	public String getNombreProveedor() {
+		return nombreProveedor;
+	}
+
+	public void setNombreProveedor(String nombreProveedor) {
+		this.nombreProveedor = nombreProveedor;
+	}
+	
+	
 	
 }

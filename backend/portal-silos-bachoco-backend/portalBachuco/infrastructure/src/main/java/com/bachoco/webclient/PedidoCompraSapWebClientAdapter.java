@@ -48,6 +48,8 @@ public class PedidoCompraSapWebClientAdapter implements PedidoCompraSapPort {
 		}
 		try {
 			String jsonResponse = client.get(endpoint);
+			System.out.println("*******RESPUESTA DE PETICION A PEDIDO-COMPRA SAP***********");
+			System.out.println("RESPONSE: "+jsonResponse);
 			boolean isValidJson=UrlConnectionUtil.isValidJsonResponse(jsonResponse);
 		    if (isValidJson==false) {
 		    	 logger.warn("Respuesta de SAP vacía (posiblemente sin datos para los filtros).");

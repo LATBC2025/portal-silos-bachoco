@@ -15,4 +15,5 @@ public class ReporteProgramArriboDTO {
 	private String fecha;
 	private String numeroPedido;
 	private String destinoPlanta;
+	private String nombreProveedor;
 }

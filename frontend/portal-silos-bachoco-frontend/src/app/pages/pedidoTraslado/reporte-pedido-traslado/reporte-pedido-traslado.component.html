@@ -117,6 +117,7 @@
             <th scope="col">Cantidad Recibida</th>
             <th scope="col">Cantidad Pendiente Traslado</th>
             <th scope="col">Pedido Compras Asociado</th>
+            <th scope="col">Número Proveedor</th>
             <th scope="col">Traslado Pendiente Facturas</th>
           </tr>
         </thead>
@@ -135,6 +136,7 @@
             <td>{{ pedidoTraslado.cantidadRecibidaPa }}</td>
             <td>{{ pedidoTraslado.cantidadPendienteTraslado }}</td>
             <td>{{ pedidoTraslado.numCompraAsociado }}</td>
+            <td>{{ pedidoTraslado.numeroProveedor ?? '-' }}</td>
             <td>{{ pedidoTraslado.trasladosPendFact }}</td>
           </tr>
           }

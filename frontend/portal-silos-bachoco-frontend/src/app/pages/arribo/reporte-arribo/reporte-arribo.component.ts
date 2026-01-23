@@ -21,6 +21,9 @@ import { UtilsService } from '../../../services/shared/utils.service';
 import { dateRangeValidator } from '../../../utils/validations/date-range.validator';
 import { AuthServiceService } from '../../../services/auth/auth-service.service';
 import * as XLSX from 'xlsx';
+import { EmpleadoExternoService } from '../../../services/emppleado-externo/empleado-externo.service';
+import { EmpleadoExternoResponseDTO } from '../../../models/catalogs/Empleado-externo/Empleado.Response.DTO';
+
 
 
 
@@ -57,13 +60,17 @@ export class ReporteArriboComponent implements OnInit {
   siloIdEmpleado!: number;
   opcionSeleccionada!: number;
   isExternoEmployee!: boolean;
+  listProveedores: EmpleadoExternoResponseDTO[] = [];
+
 
 
   constructor(private reporteArriboServ: ReporteArriboService,
     private siloService: SiloServiceService,
     private authService: AuthServiceService,
     private utilServ: UtilsService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private empleadoExternoService: EmpleadoExternoService // <-- NUEVO
+
   ) {
 
   }
@@ -93,6 +100,7 @@ export class ReporteArriboComponent implements OnInit {
   initForm() {
     this.formReporteArribo = new FormGroup({
       siloId: new FormControl('0', [Validators.required, notZeroStringValidator()]),
+      idProveedor: new FormControl('0', [notZeroStringValidator()]), // <-- NUEVO (obligatorio)
       fechaI: new FormControl('', [Validators.required]),
       fechaF: new FormControl('', [Validators.required])
     }, {
@@ -100,7 +108,41 @@ export class ReporteArriboComponent implements OnInit {
         dateRangeValidator('fechaI', 'fechaF', 'rangoFechaInvalido'),
       ]
     });
+
+     // ✅ Cuando cambia silo: reset proveedor + cargar proveedores del silo
+  this.formReporteArribo.get('siloId')?.valueChanges.subscribe((val) => {
+    const siloId = Number(val ?? 0);
+
+    this.formReporteArribo.get('idProveedor')?.setValue('0');
+    this.listProveedores = [];
+
+    if (!siloId || siloId === 0) {
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.loadProveedoresBySilo(siloId);
+  });
+
   }
+
+
+  loadProveedoresBySilo(siloId: number) {
+  this.empleadoExternoService.findAllBySilo(siloId).subscribe({
+    next: (resp: EmpleadoExternoResponseDTO[]) => {
+      this.listProveedores = resp ?? [];
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      this.listProveedores = [];
+      this.utilServ.showMessageError("Hubo un error al cargar proveedores por silo");
+      console.log("ERROR PROVEEDORES POR SILO:", err);
+      this.cdr.detectChanges();
+    }
+  });
+}
+
+
 
   getSilos() {
     this.siloService.getSilos().subscribe({
@@ -139,7 +181,11 @@ export class ReporteArriboComponent implements OnInit {
 
   submmit() {
     if (this.formReporteArribo.valid) {
-      this.reporteArriboServ.findAllByFilters(this.getValueNumber('siloId'), this.getValue("fechaI"), this.getValue("fechaF")).subscribe({
+const raw = this.formReporteArribo.getRawValue();
+    const idProveedor = Number(raw.idProveedor);
+
+
+      this.reporteArriboServ.findAllByFilters(this.getValueNumber('siloId'), idProveedor,this.getValue("fechaI"), this.getValue("fechaF")).subscribe({
         next: (response: ReporteArriboResponse[]) => {
           this.clearListas();
           if (response != null && response != undefined && response.length > 0) {
@@ -164,31 +210,33 @@ export class ReporteArriboComponent implements OnInit {
       this.utilServ.markAllControlsAsTouched(this.formReporteArribo);
     }
   }
-downloadExcel(): void {
+  downloadExcel(): void {
   console.log('[EXCEL] Click exportar');
 
-  // 👉 ESTA es la lista que pinta la tabla
   const data = this.listaReporteArribo;
 
-  console.log('[EXCEL] Total registros:', data?.length ?? 0);
-
-  // 🔴 VALIDACIÓN CLAVE
   if (!data || data.length === 0) {
-    this.utilServ.showMessageWarningInfo(
-      'No hay datos en la tabla para exportar'
-    );
+    this.utilServ.showMessageWarningInfo('No hay datos en la tabla para exportar');
     return;
   }
 
-  // =========================
-  // GENERACIÓN DEL EXCEL
-  // =========================
+  // ✅ Nombre dinámico del proveedor (según el select)
+  const raw = this.formReporteArribo.getRawValue();
+  const idProveedor = Number(raw.idProveedor ?? 0);
+
+  const proveedorSeleccionado = this.listProveedores?.find(p => Number(p.id) === idProveedor);
+  const nombreProveedorTitulo = proveedorSeleccionado?.nombre?.trim() || 'Proveedor';
+
+  // ✅ Header dinámico (lo que se verá como título en Excel)
+  const proveedorHeader = `Proveedor: ${nombreProveedorTitulo}`;
+
   const rows = data.map(r => ({
     Toneladas: r.toneladas,
     Material: r.material,
     Fecha: r.fecha,
     Pedido: r.numeroPedido,
-    'Planta Destino': r.destinoPlanta
+    'Planta Destino': r.destinoPlanta,
+    [proveedorHeader]: r.nombreProveedor ?? '' // ✅ Columna con header dinámico
   }));
 
   const ws = XLSX.utils.json_to_sheet(rows);
@@ -198,18 +246,18 @@ downloadExcel(): void {
     { wch: 25 },
     { wch: 14 },
     { wch: 18 },
-    { wch: 25 }
+    { wch: 25 },
+    { wch: 35 } // ✅ ancho para la columna dinámica
   ];
 
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Arribos');
 
-  const siloId = this.formReporteArribo.get('siloId')?.value ?? '0';
-  const fechaI = this.formReporteArribo.get('fechaI')?.value ?? '';
-  const fechaF = this.formReporteArribo.get('fechaF')?.value ?? '';
+  const siloId = raw.siloId ?? '0';
+  const fechaI = raw.fechaI ?? '';
+  const fechaF = raw.fechaF ?? '';
 
   const fileName = `Reporte_Arribos_Silo_${siloId}_${fechaI}_a_${fechaF}.xlsx`;
-
   XLSX.writeFile(wb, fileName);
 }
 

@@ -8,6 +8,7 @@ export class ProgramArriboRequest {
     plantaId: number;
     pedidoTrasladoId: number|undefined;
     isRestaCantidad:string;
+    numeroProveedor?: string; // NUEVO
 
     constructor(
         numeroPedidoTraslado: string|undefined,
@@ -18,7 +19,8 @@ export class ProgramArriboRequest {
         materialId: number,
         plantaId: number,
         pedidoTrasladoId: number|undefined,
-         isRestaCantidad:string
+         isRestaCantidad:string,
+         numeroProveedor: string
     ) {
         this.numeroPedidoTraslado = numeroPedidoTraslado;
         this.cantidad = cantidad;
@@ -29,5 +31,6 @@ export class ProgramArriboRequest {
         this.plantaId = plantaId;
         this.pedidoTrasladoId = pedidoTrasladoId;
         this.isRestaCantidad=isRestaCantidad
+        this.numeroProveedor=numeroProveedor;
     }
 }

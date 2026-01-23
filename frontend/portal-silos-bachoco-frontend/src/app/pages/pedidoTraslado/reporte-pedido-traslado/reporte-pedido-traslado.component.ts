@@ -349,6 +349,7 @@ export class ReportePedidoTrasladoComponent implements OnInit {
       "Cantidad Recibida": x.cantidadRecibidaPa ?? 0,
       "Cantidad Pendiente Traslado": x.cantidadPendienteTraslado ?? 0,
       "Pedido Compras Asociado": x.numCompraAsociado ?? "",
+      "Número Proveedor": x.numeroProveedor ?? "",          // ✅ NUEVO
       "Traslado Pendiente Facturas": x.trasladosPendFact ?? 0,
     }));
 
@@ -380,6 +381,7 @@ export class ReportePedidoTrasladoComponent implements OnInit {
       { wch: 16 }, // recibida
       { wch: 26 }, // pendiente traslado
       { wch: 22 }, // pedido compra
+      { wch: 18 }, // ✅ Número Proveedor (NUEVO)
       { wch: 26 }, // pendiente facturas
     ];
 
@@ -387,9 +389,10 @@ export class ReportePedidoTrasladoComponent implements OnInit {
     // Última columna = 11 columnas => A..K (0..10)
     // Título: A1:K1, Filtros: A2:K2
     ws["!merges"] = [
-      { s: { r: 0, c: 0 }, e: { r: 0, c: 10 } }, // A1:K1
-      { s: { r: 1, c: 0 }, e: { r: 1, c: 10 } }, // A2:K2
-    ];
+  { s: { r: 0, c: 0 }, e: { r: 0, c: 11 } }, // A1:L1 ✅
+  { s: { r: 1, c: 0 }, e: { r: 1, c: 11 } }, // A2:L2 ✅
+];
+
 
     // ---- 6) Workbook + descarga ----
     const wb: XLSX.WorkBook = XLSX.utils.book_new();

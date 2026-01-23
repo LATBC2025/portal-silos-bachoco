@@ -36,7 +36,7 @@
       <select class="form-select" formControlName="proveedor" id="proveedor">
         <option [ngValue]="0">Seleccionar</option>
         @for(p of listProveedores; track p.id){
-          <option [ngValue]="p.id">{{ p.nombre }}</option>
+        <option [ngValue]="p.numeroProveedor">{{ p.numeroProveedor }} - {{ p.nombre }}</option>
         }
       </select>
 
@@ -208,11 +208,14 @@
                   </div>
                 </td>
                 <td>
-                  <input type="date" formControlName="fecha" class="form-control">
+                  <input type="date" formControlName="fecha" class="form-control" [min]="getTodayAsString()">
                   <div class="text-danger" style="font-size: 0.9em;">
                     @if (items.at(i).get('fecha')?.invalid && items.at(i).get('fecha')?.touched) {
                     Campo requerido.
                     }
+                     @if (items.at(i).get('fecha')?.errors?.['fechaAnterior']) {
+                        Fecha inválida, no se permiten fechas anteriores a hoy.
+                      }
                   </div>
                 </td>
                 <td>

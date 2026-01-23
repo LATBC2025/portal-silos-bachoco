@@ -27,6 +27,7 @@ public class PedidoSapResponseClientDTO {
     private String tipoPedido;
     private String clasePed;
     private String pedCompra;
+    private String PROVEEDOR;
     private String contratoLegal;
     
     // Los campos param1, param2, etc. se quedarán en null si no vienen en el JSON

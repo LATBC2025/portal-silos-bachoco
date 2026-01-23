@@ -5,4 +5,7 @@ export interface EmpleadoExternoResponseDTO {
     usuario:     string;
     correo:  string;
     siloId:   number;
+
+    numeroProveedor?: string; // <-- el que viene del backend
+  bodegasIds?: number[];    // <-- si también lo regresas
 }

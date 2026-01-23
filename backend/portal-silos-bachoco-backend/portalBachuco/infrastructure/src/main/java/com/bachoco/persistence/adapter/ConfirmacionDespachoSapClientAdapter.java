@@ -39,9 +39,13 @@ public class ConfirmacionDespachoSapClientAdapter implements ConfirmacionDespach
 	public String sendConfirmacionDespacho(String claveSilo, String claveMaterial,String claveNumPedTraslado ,String claveMovimiento,
 			String numBoleta, String pesoNeto, String destino,String ruta) {
 	
+		System.out.println("*********Se realiza petición a confirmación-despacho*********");
+		System.out.println("ConfirmacionDespachoSapClientAdapter.sendConfirmacionDespacho: ");
+
 		HttpURLConnection conn=null;
         try {
         	URL url = new URL(sapProperties.getUrl().concat("/confirmacion-despacho"));
+        	System.out.println("URL: " +url);
         	conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");

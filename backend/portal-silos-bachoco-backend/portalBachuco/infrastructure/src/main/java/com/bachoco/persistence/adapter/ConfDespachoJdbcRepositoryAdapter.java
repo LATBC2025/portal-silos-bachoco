@@ -269,8 +269,8 @@ public class ConfDespachoJdbcRepositoryAdapter implements ConfirmacionDespachoJd
 
 	@Override
 	public List<ConfirmDespachoResponse> findAllConfirmacionDespacho(String silo, String material, String fechaInicio,
-			String fechaFin) {
-		return this.confDespachoJdbcRepository.findAllConfirmacionesDespacho(silo,material,fechaInicio,fechaFin);
+			String fechaFin,String proveedor) {
+		return this.confDespachoJdbcRepository.findAllConfirmacionesDespacho(silo,material,fechaInicio,fechaFin,proveedor);
 	}
 
 	//envia 352 con el peso neto para cancelar la confimacion despacho

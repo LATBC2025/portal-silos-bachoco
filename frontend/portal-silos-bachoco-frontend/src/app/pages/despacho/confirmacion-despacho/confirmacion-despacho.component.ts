@@ -244,7 +244,7 @@ private loadProveedoresBySilo(siloId: number): void {
 private lastSiloIdLoaded = 0;
 
 private listenSiloChangeLoadProveedores(): void {
-  const siloCtrl = this.formFilter.get('silo');
+  const siloCtrl = this.formFilter.get('siloId'); // ✅
   if (!siloCtrl) return;
 
   siloCtrl.valueChanges.subscribe(val => {
@@ -257,7 +257,7 @@ private listenSiloChangeLoadProveedores(): void {
 
     // ✅ reset proveedor SOLO cuando cambia silo
     this.listProveedores = [];
-    this.formFilter.patchValue({ proveedor: 0 }, { emitEvent: false });
+    this.formFilter.patchValue({ proveedorId: '0' }, { emitEvent: false });
 
     if (!siloId) return;
 
@@ -1550,6 +1550,8 @@ private listenSiloChangeLoadProveedores(): void {
       let fechaInicio = this.getValue('fechaI');
       let fechaFin = this.getValue('fechaF');
       const _siloId = this.getValue('siloId');
+      const proveedor = this.getValue('proveedorId'); //  NUMERO PROVEEDOR (string)
+
       await this.findAllPlantas();
       await this.findAllPedidoTraslado(
         _siloId,
@@ -1561,7 +1563,8 @@ private listenSiloChangeLoadProveedores(): void {
         siloId,
         materialId,
         fechaInicio,
-        fechaFin
+        fechaFin,
+        proveedor
       );
     } else {
       this.utilsServc.markAllControlsAsTouched(this.formFilter);
@@ -1572,10 +1575,11 @@ private listenSiloChangeLoadProveedores(): void {
     silo: number,
     material: number,
     fechaInicio: string,
-    fechaFin: string
+    fechaFin: string,
+  proveedor: string
   ) {
     this.confDespachoServ
-      .findAllConfirmDespachos(silo, material, fechaInicio, fechaFin)
+      .findAllConfirmDespachos(silo, material, fechaInicio, fechaFin,proveedor)
       .subscribe({
         next: (response: ConfirmacionDespachoResponse[]) => {
           if (
@@ -1867,8 +1871,11 @@ private listenSiloChangeLoadProveedores(): void {
   findPedidoTraslado() {
     let siloId = this.getValue('siloId');
     let materialId = this.getValue('materialId');
+      const proveedor = this.getValue('proveedorId'); //  NUEVO
+
+
     this.programArriboService
-      .findPedidosTralados(siloId, '1', materialId)
+      .findPedidosTralados(siloId, '1', materialId,proveedor)
       .subscribe({
         next: (response: ProgramPedTrasladoResponse[]) => {
           if (

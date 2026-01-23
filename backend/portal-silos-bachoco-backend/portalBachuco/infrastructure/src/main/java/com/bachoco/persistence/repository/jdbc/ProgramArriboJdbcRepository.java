@@ -51,6 +51,7 @@ public class ProgramArriboJdbcRepository {
 	}
 	
 	public String saveProgramArribo(List<ProgramArriboRequest> req){
+		System.out.println("-------------Se inicia Insert de PROGRAMACIÓN DE ARRIBO----- ProgramArriboJdbcRepository.saveProgramArribo: en sp_inserta_program_arribo");
 		this.simpleJdbcCall = new SimpleJdbcCall(dataSource).withProcedureName("sp_inserta_program_arribo");
 		for (ProgramArriboRequest p : req) {
 			Map<String, Object> params = new HashMap<>();
@@ -61,10 +62,14 @@ public class ProgramArriboJdbcRepository {
 			params.put("p_planta_id",p.getPlantaId());
 			params.put("p_pedido_traslado_id",p.getPedidoTrasladoId());
 			params.put("p_estatus_conf_despacho",p.getIsRestaCantidad()); //P ES PROGRAMADO, R ES RESTA CANTIDAD
+			params.put("p_numero_proveedor", p.getNumeroProveedor());
+
 			try {
 				simpleJdbcCall.execute(params);
 			} catch (Exception e) {
-				logger.error("no se pudo crear la progracion arribo: "+e.getMessage());
+				logger.error("No se pudo crear la progracion arribo: "+e.getMessage());
+				System.out.println("No se pudo crear la progracion arribo");
+				e.printStackTrace();
 				throw new CannotRegisterProgramArriboException();
 			}
 		}

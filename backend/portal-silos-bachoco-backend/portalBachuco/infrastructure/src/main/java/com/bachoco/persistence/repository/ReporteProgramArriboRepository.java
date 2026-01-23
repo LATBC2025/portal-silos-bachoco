@@ -20,14 +20,23 @@ public class ReporteProgramArriboRepository {
 		this.reporteProgramArriboRowMapper = reporteProgramArriboRowMapper;
 	}
 	
-	public List<ReporteProgramArriboDTO> obtenerPedidosFiltrados(Integer siloId, String fechaInicio,String fechaFin) {
-		String sql = "{call ObtenerReporteProgramArriboFiltrados(?, ?, ?)}";
-		if(fechaInicio.equals("-1")) {
-			fechaInicio=null;
-		}
-		if(fechaFin.equals("-1")) {
-			fechaFin=null;
-		}
-		return jdbcTemplate.query(sql, reporteProgramArriboRowMapper, siloId, fechaInicio, fechaFin);
+	public List<ReporteProgramArriboDTO> obtenerPedidosFiltrados(
+	        Integer siloId, Integer proveedorId, String fechaInicio, String fechaFin) {
+
+	    try {
+	    	String proveedor = String.valueOf(proveedorId);
+	    	
+	        if ("-1".equals(fechaInicio)) fechaInicio = null;
+	        if ("-1".equals(fechaFin)) fechaFin = null;
+
+	        String sql = "{call ObtenerReporteProgramArriboFiltrados(?, ?, ?, ?)}";
+	        return jdbcTemplate.query(sql, reporteProgramArriboRowMapper,
+	                siloId, proveedor, fechaInicio, fechaFin);
+
+	    } catch (Exception e) {
+	        e.printStackTrace(); // solo debug local
+	        throw e; // 🔴 CLAVE: re-lanza la excepción
+	    }
 	}
+
 }

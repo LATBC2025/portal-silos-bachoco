@@ -257,7 +257,7 @@ public class ConfDespachoJdbcRepository {
 		}
 		return response;
 	}
-
+/*
 	public List<ConfirmDespachoResponse> findAllConfirmacionesDespacho(String silo, String material, String fechaInicio,
 			String fechaFin) {
 		String sql = """
@@ -302,6 +302,68 @@ public class ConfDespachoJdbcRepository {
 			return Collections.EMPTY_LIST;
 		} catch (Exception e) {
 			logger.error("Error en la consulta en findAllConfirmacionesDespacho: ",e.getMessage());
+			return Collections.EMPTY_LIST;
+		}
+	}*/
+	
+	public List<ConfirmDespachoResponse> findAllConfirmacionesDespacho(String silo, String material, String fechaInicio,
+			String fechaFin, String proveedor) {
+
+		String sql = """
+				   SELECT
+					    cf.tc_bodega_id AS claveBodega,
+					    ped.tc_silo_id AS claveSilo,
+					    cf.tc_material_id AS claveMaterial,
+					    cf.fecha_embarque AS fechaEmbarque,
+					    cf.numero_boleta AS numBoleta,
+					    cf.peso_bruto AS pesoBruto,
+					    cf.peso_tara AS pesoTara,
+					    cf.humedad AS humedad,
+					    cf.chofer AS chofer,
+					    cf.placa_jaula AS placaJaula,
+					    cf.linea_transportista AS lineaTransportista,
+					    cf.tc_planta_id AS claveDestino,
+					    ped.numero_ped_traslado AS numPedidoTraslado,
+					    cf.tipo_movimiento AS tipoMovimiento,
+					    cf.confirmacion_despacho_id AS idconfDespacho,
+					    ped.pedido_traslado_id AS idPedTraslado,
+					    cf.numero_mov_sap AS numeroSap,
+					    cf.folio
+					  FROM tc_confirmacion_despacho cf
+					  INNER JOIN tc_pedido_traslado ped
+					    ON cf.tc_pedido_traslado_id = ped.pedido_traslado_id
+					  INNER JOIN tc_pedido_compra pc
+					    ON ped.tc_pedido_compra_id = pc.pedido_compra_id
+					  WHERE ped.tc_silo_id = :silo
+					    AND cf.tc_material_id = :material
+					    AND (:fechaInicio IS NULL OR cf.fecha_embarque >= :fechaInicio)
+					    AND (:fechaFin IS NULL OR cf.fecha_embarque <= :fechaFin)
+					    AND (:proveedor IS NULL OR pc.proveedor = :proveedor)
+					  ORDER BY cf.fecha_embarque DESC
+				""";
+
+		try {
+			Map<String, Object> params = new HashMap<>();
+			params.put("silo", silo);
+			params.put("material", material);
+			params.put("fechaInicio", fechaInicio);
+			params.put("fechaFin", fechaFin);
+			params.put("proveedor", proveedor);
+			
+			System.out.println("=== QUERY CONFIRM DESPACHO ===");
+			System.out.println(sql);
+			System.out.println("=== PARAMS ===");
+			params.forEach((k, v) ->
+			    System.out.println(k + " = " + v)
+			);
+
+			return namedParameterJdbcTemplate.query(sql, params, confirmDespachoRowMapper);
+		} catch (EmptyResultDataAccessException e) {
+			logger.error("Error de tipo EmptyResultDataAccessException en la consulta en findAllConfirmacionesDespacho: ",e.getMessage());
+			return Collections.EMPTY_LIST;
+		} catch (Exception e) {
+			logger.error("Error en la consulta en findAllConfirmacionesDespacho: ",e.getMessage());
+			e.printStackTrace();
 			return Collections.EMPTY_LIST;
 		}
 	}

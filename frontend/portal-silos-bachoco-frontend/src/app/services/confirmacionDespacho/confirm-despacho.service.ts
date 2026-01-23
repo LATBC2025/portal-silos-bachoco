@@ -36,13 +36,14 @@ export class ConfirmDespachoService {
   dowloadPdf(id:number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/confirmacion-despacho/dowload-pdf/${id}`, { responseType: 'blob' });
   }
-  
-  findAllConfirmDespachos(silo: number, material: number, fechaInicio: string, fechaFin: string): Observable<ConfirmacionDespachoResponse[]> {
+
+  findAllConfirmDespachos(silo: number, material: number, fechaInicio: string, fechaFin: string, proveedor: string): Observable<ConfirmacionDespachoResponse[]> {
     let params = new HttpParams();
     params = params.set("silo", silo.toString());
     params = params.set("material", material.toString());
     params = params.set("fechaInicio", fechaInicio);
     params = params.set("fechaFin", fechaFin);
+    params = params.set("proveedor", proveedor);
     return this.http.get<ConfirmacionDespachoResponse[]>(`${this.apiUrl}/confirmacion-despacho/filter-list-conf-despacho`, { params })
   }
 

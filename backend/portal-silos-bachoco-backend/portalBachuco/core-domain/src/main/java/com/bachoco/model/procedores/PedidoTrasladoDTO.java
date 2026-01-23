@@ -17,6 +17,9 @@ public class PedidoTrasladoDTO {
 	private Double cantidadEmbarcadaReal;          // confirmado real
 	private Double cantidadPendientePorProgramar;  // saldo liberado
 	private Boolean saldoSeLiberaManana;           // opcional (para mensaje)
+	
+	private String numeroProveedor;
+
 
 	
 	public PedidoTrasladoDTO() {
@@ -133,6 +136,15 @@ public class PedidoTrasladoDTO {
 	public void setSaldoSeLiberaManana(Boolean saldoSeLiberaManana) {
 		this.saldoSeLiberaManana = saldoSeLiberaManana;
 	}
+
+	public String getNumeroProveedor() {
+		return numeroProveedor;
+	}
+
+	public void setNumeroProveedor(String numeroProveedor) {
+		this.numeroProveedor = numeroProveedor;
+	}
+	
 	
 	
 }

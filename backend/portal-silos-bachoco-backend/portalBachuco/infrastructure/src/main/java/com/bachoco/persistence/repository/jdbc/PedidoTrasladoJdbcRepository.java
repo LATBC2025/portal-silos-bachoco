@@ -82,7 +82,7 @@ public class PedidoTrasladoJdbcRepository {
 	    return namedParameterJdbcTemplate.query(sql, params, (rs, rowNum) -> rs.getString("NUMERO_PED_TRASLADO"));
 	}
 
-	public List<PedidoTrasladoDTO> findAllByFolioNumCompra(List<String> folios,String claveSilo,String claveMaterial) {
+	/*public List<PedidoTrasladoDTO> findAllByFolioNumCompra(List<String> folios,String claveSilo,String claveMaterial) {
 		String sql = """
                     SELECT
 					  pt.PEDIDO_TRASLADO_ID,
@@ -106,6 +106,45 @@ public class PedidoTrasladoJdbcRepository {
 					pt.NUMERO_PED_TRASLADO in (:folios)
 					AND (s.SILO_NOMBRE=:silo OR s.SILO_CLAVE=:silo)
 					AND (m.NUMERO_MATERIAL=:material or m.MATERIAL_DESCRIPCION=:material)
+				   """;
+		Map<String, Object> params = new HashMap<>();
+		params.put("folios", folios);
+		params.put("silo", claveSilo);
+		params.put("material", claveMaterial);
+		return namedParameterJdbcTemplate.query(sql, params, pedidoTrasladoRowMapper);
+	}*/
+	
+	public List<PedidoTrasladoDTO> findAllByFolioNumCompra(List<String> folios,String claveSilo,String claveMaterial) {
+		String sql = """
+                    SELECT
+						    pt.PEDIDO_TRASLADO_ID,
+						    pt.FOLIO_NUM_PED_POSICION,
+						    pt.PLANTA_DESTINO,
+						    pt.NUMERO_PED_TRASLADO,
+						    dpt.CANTIDAD_PEDIDO,
+						    dpt.CANTIDAD_TRASLADO,
+						    dpt.CANTIDAD_RECIBIDA AS CANTIDAD_RECIBIDA_PA,
+						    dpt.PENDIENTE_TRASLADO,
+						    pc.NUMERO_PEDIDO AS NUM_COMPRA_ASOCIADO,
+						    dpt.TRASLADO_PENDIENTE_FACTURA,
+						    pt.POSICION,
+						    e.NUMERO_PROVEEDOR
+						FROM tc_pedido_traslado pt
+						JOIN tc_detalle_pedido_traslado dpt
+						    ON dpt.TC_PEDIDO_TRASLADO_ID = pt.PEDIDO_TRASLADO_ID
+						JOIN tc_pedido_compra pc
+						    ON pt.TC_PEDIDO_COMPRA_ID = pc.PEDIDO_COMPRA_ID
+						JOIN tc_silo s
+						    ON pt.TC_SILO_ID = s.SILO_ID
+						JOIN tc_material m
+						    ON pt.TC_MATERIAL_ID = m.MATERIAL_ID
+						LEFT JOIN tc_empleado_externo ex
+						    ON ex.TC_SILO_ID = s.SILO_ID
+						LEFT JOIN tc_empleado e
+						    ON e.EMPLEADO_ID = ex.TC_EMPLEADO_ID
+						WHERE pt.NUMERO_PED_TRASLADO IN (:folios)
+						  AND (s.SILO_NOMBRE = :silo OR s.SILO_CLAVE = :silo)
+						  AND (m.NUMERO_MATERIAL = :material OR m.MATERIAL_DESCRIPCION = :material);
 				   """;
 		Map<String, Object> params = new HashMap<>();
 		params.put("folios", folios);
@@ -184,9 +223,10 @@ public class PedidoTrasladoJdbcRepository {
 	}
 
 	public List<PedidoTrasladoArriboDTO> obtenerPedidosTrasladoParaArribo(Integer siloId, String plantaDestino,
-			Integer materialId) {
-		String sql = "{call sp_obtener_pedidos_traslados_totales(?,?,?)}";
-		return jdbcTemplate.query(sql, pedTrasladoCantDisponibleRowMapper, siloId, plantaDestino, materialId);
+			Integer materialId, String proveedor) {
+		System.out.print("_______Consumiendo SP -call sp_obtener_pedidos_traslados_totales(?,?,?,?)- con nuevo filtro de PROVEEDOR________");
+		String sql = "{call sp_obtener_pedidos_traslados_totales(?,?,?,?)}";
+		return jdbcTemplate.query(sql, pedTrasladoCantDisponibleRowMapper, siloId, plantaDestino, materialId,proveedor);
 	}
 
 	public List<PedidoTrasladoArriboDTO> findByFilterProgramArribo(Integer siloId, String plantaDestino,

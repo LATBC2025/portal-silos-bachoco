@@ -14,4 +14,7 @@ export interface PedidoTrasladoResponse {
   cantidadPendientePorProgramar?: number;
   saldoSeLiberaManana?: boolean;
 
+  numeroProveedor?: string; // ✅ NUEVO
+
+
 }

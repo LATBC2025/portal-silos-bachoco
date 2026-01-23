@@ -13,9 +13,10 @@ export class ReporteArriboService {
 
   constructor(private http: HttpClient) { }
 
-  findAllByFilters(siloId: number, fechaI: string, fechaF: string): Observable<ReporteArriboResponse[]> {
+  findAllByFilters(siloId: number,idProveedor: number, fechaI: string, fechaF: string): Observable<ReporteArriboResponse[]> {
     let params = new HttpParams();
     params = params.set("siloId", siloId);
+    params = params.set("idProveedor",idProveedor)
     params = params.set("fechaI", fechaI);
     params = params.set("fechaF", fechaF);
     return this.http.get<ReporteArriboResponse[]>(`${this.apiUrl}/reporte-program-arribo`, { params });

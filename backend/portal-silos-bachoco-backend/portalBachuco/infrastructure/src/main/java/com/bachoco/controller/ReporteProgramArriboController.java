@@ -22,10 +22,18 @@ public class ReporteProgramArriboController {
 		this.reporteProgramArriboUseCase = reporteProgramArriboUseCase;
 	}
 	
-	@GetMapping
+	/*@GetMapping
 	public ResponseEntity<List<ReportePorgramArribo>> findAll(
 			@RequestParam Integer siloId,@RequestParam String fechaI,@RequestParam String fechaF){
 		List<ReportePorgramArribo> arribos= this.reporteProgramArriboUseCase.findAll(siloId, fechaI, fechaF);
+		return new ResponseEntity<List<ReportePorgramArribo>>(arribos,HttpStatus.OK);
+	}*/
+	
+	@GetMapping
+	public ResponseEntity<List<ReportePorgramArribo>> findAll(
+			@RequestParam Integer siloId,@RequestParam Integer idProveedor ,@RequestParam String fechaI,@RequestParam String fechaF
+			){
+		List<ReportePorgramArribo> arribos= this.reporteProgramArriboUseCase.findAll(siloId, idProveedor,fechaI, fechaF);
 		return new ResponseEntity<List<ReportePorgramArribo>>(arribos,HttpStatus.OK);
 	}
 }

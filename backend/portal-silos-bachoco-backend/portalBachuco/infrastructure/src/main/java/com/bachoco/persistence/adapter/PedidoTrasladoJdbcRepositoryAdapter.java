@@ -219,9 +219,9 @@ public class PedidoTrasladoJdbcRepositoryAdapter implements PedidoTrasladoJdbcRe
 	}
 
 	@Override
-	public List<PedidoTrasladoArriboDTO> findByFilterProgramArribo(Integer siloId, String planta,Integer materialId) {
-		return this.pedidoTrasladoJdbcRepository.obtenerPedidosTrasladoParaArribo(siloId,planta, materialId);
-	}
+	public List<PedidoTrasladoArriboDTO> findByFilterProgramArribo(Integer siloId, String planta,Integer materialId,String proveedor) {
+		return this.pedidoTrasladoJdbcRepository.obtenerPedidosTrasladoParaArribo(siloId,planta, materialId,proveedor);
+	} 
 	
 	@Override
 	public List<PedTrasladoArriboConfigDespachoDTO> findByPedTrasladoByConfDespacho(Integer siloId,

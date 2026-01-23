@@ -11,6 +11,7 @@ public class ProgramArriboRequest {
 	private Integer plantaId;
 	private Integer pedidoTrasladoId;
 	private String isRestaCantidad;
+	private String numeroProveedor;
 	
 	public ProgramArriboRequest() {
 	}
@@ -86,4 +87,13 @@ public class ProgramArriboRequest {
 	public void setIsRestaCantidad(String isRestaCantidad) {
 		this.isRestaCantidad = isRestaCantidad;
 	}
+
+	public String getNumeroProveedor() {
+		return numeroProveedor;
+	}
+
+	public void setNumeroProveedor(String numeroProveedor) {
+		this.numeroProveedor = numeroProveedor;
+	}
+	
 }

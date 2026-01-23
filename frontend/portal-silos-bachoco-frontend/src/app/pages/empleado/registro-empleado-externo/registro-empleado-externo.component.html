@@ -57,25 +57,25 @@
             </div>
           </div>
           <div class="col-md-2 mt-3 mt-lg-0">
-          <label for="sapVendor" class="form-label">Proveedor SAP</label>
+          <label for="numeroProveedor" class="form-label">Proveedor SAP</label>
           <input
             type="text"
             class="form-control"
-            formControlName="sapVendor"
-            id="sapVendor"
+            formControlName="numeroProveedor"
+            id="numeroProveedor"
             placeholder="Ej. 00012345"
             maxlength="20"
             required
           />
           <div class="text-danger size-text-error">
-            @if (formEmpleadoExterno.get('sapVendor')?.invalid && formEmpleadoExterno.get('sapVendor')?.touched) {
-              @if (formEmpleadoExterno.get('sapVendor')?.errors?.['required']) {
+            @if (formEmpleadoExterno.get('numeroProveedor')?.invalid && formEmpleadoExterno.get('numeroProveedor')?.touched) {
+              @if (formEmpleadoExterno.get('numeroProveedor')?.errors?.['required']) {
                 Campo requerido.
               }
-              @if (formEmpleadoExterno.get('sapVendor')?.errors?.['maxlength']) {
+              @if (formEmpleadoExterno.get('numeroProveedor')?.errors?.['maxlength']) {
                 Máx. 30 caracteres.
               }
-              @if (formEmpleadoExterno.get('sapVendor')?.errors?.['pattern']) {
+              @if (formEmpleadoExterno.get('numeroProveedor')?.errors?.['pattern']) {
                 Formato inválido.
               }
             }
@@ -140,6 +140,7 @@
         <thead>
           <tr>
             <th scope="col">Id</th>
+            <th scope="col">Número Proveedor</th> <!-- ✅ NUEVO -->
             <th scope="col">Nombre</th>
             <th scope="col">Email</th>
             <th scope="col">Silo</th>
@@ -150,6 +151,7 @@
           @for (empleado of listaEmpleadoExternoFilters; track empleado.id;let i = $index) {
           <tr>
             <td>{{ empleado.id }}</td>
+            <td>{{ empleado.numeroProveedor ?? '-' }}</td> <!-- ✅ NUEVO -->
             <td>{{ empleado.nombre }}</td>
             <td>{{ empleado.correo }}</td>
             <td>{{extractNameSilo(empleado.siloId) }}</td>

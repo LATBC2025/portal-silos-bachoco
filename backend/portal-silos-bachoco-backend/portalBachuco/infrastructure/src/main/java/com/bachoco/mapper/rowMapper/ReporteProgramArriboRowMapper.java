@@ -25,7 +25,8 @@ public class ReporteProgramArriboRowMapper implements RowMapper<ReporteProgramAr
 		reporte.setMaterial(rs.getString("MATERIAL_DESCRIPCION"));
 		reporte.setFecha(dateTime.format(formatter));
 		reporte.setNumeroPedido(rs.getString("NUMERO_PED_TRASLADO"));
-		reporte.setDestinoPlanta(rs.getString("NOMBRE"));
+		reporte.setDestinoPlanta(rs.getString("PLANTA_DESTINO"));
+		reporte.setNombreProveedor(rs.getString("NOMBRE_PROVEEDOR"));
 		return reporte;
 	}
 

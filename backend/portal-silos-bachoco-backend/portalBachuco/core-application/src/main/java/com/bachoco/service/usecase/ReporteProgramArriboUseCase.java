@@ -13,7 +13,7 @@ public class ReporteProgramArriboUseCase {
 		this.programArriboPort = programArriboPort;
 	}
 	
-	public List<ReportePorgramArribo> findAll(Integer siloId,String fechaI,String fechaF){
-		return this.programArriboPort.findAllFilters(siloId, fechaI, fechaF);
+	public List<ReportePorgramArribo> findAll(Integer siloId, Integer idProveedor,String fechaI,String fechaF){
+		return this.programArriboPort.findAllFilters(siloId, idProveedor,fechaI, fechaF);
 	}
 }

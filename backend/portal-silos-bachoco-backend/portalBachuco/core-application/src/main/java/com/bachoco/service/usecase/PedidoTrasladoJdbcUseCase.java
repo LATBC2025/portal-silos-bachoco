@@ -114,8 +114,8 @@ public class PedidoTrasladoJdbcUseCase {
 	public List<PedidoTrasladoDTO> findByFiltersCantidadDisponible(Integer siloId,Integer materialId,String fechaInicio,String fechaFin){
 		return this.pedidoTrasladoJdbcRepositoryPort.findByFiltersCantidadDisponible(siloId,materialId, fechaInicio, fechaFin);
 	}
-	public List<PedidoTrasladoArriboDTO> findByFilterProgramArribo(Integer siloId,String planta,Integer materialId){
-		return this.pedidoTrasladoJdbcRepositoryPort.findByFilterProgramArribo(siloId,planta,materialId);
+	public List<PedidoTrasladoArriboDTO> findByFilterProgramArribo(Integer siloId,String planta,Integer materialId,String proveedor){
+		return this.pedidoTrasladoJdbcRepositoryPort.findByFilterProgramArribo(siloId,planta,materialId,proveedor);
 	}
 	public List<PedTrasladoArriboConfigDespachoDTO> findByPedTrasladoByConfDespacho(Integer siloId,Integer materialId,String fechaInicio,String fechaFin){
 		return this.pedidoTrasladoJdbcRepositoryPort.findByPedTrasladoByConfDespacho(siloId,materialId,fechaInicio,fechaFin);

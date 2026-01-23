@@ -63,8 +63,8 @@ public class PedidoTrasladoController {
 	
 	@GetMapping("/filters/program")
 	public ResponseEntity<List<PedidoTrasladoArriboDTO>> findAllByFilterProgramArribo(@RequestParam Integer siloId,@RequestParam Integer materialId,
-			@RequestParam String planta){
-		List<PedidoTrasladoArriboDTO> response=this.pedidoTrasladoJdbcUseCase.findByFilterProgramArribo(siloId,planta,materialId);
+			@RequestParam String planta, @RequestParam String proveedor){
+		List<PedidoTrasladoArriboDTO> response=this.pedidoTrasladoJdbcUseCase.findByFilterProgramArribo(siloId,planta,materialId,proveedor);
 		return new ResponseEntity<>(response,HttpStatus.OK);
 	}
 	

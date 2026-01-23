@@ -113,6 +113,7 @@ public class PedidoCompraJdbcRepositoryAdapter implements PedidoCompraJdbcReposi
 	@Override
 	public List<PedidoCompraDTO> findByFilterSiloAndMaterialAnFecha(String claveSilo, String claveMaterial,
 			String plantaDestino,String fechaInicio, String fechaFin) {
+		System.out.println("----PedidoCompraJdbcRepositoryAdapter - findByFilterSiloAndMaterialAnFecha()-----");
 		List<PedidoCompraDTO> response = new ArrayList<>();
 		List<String> foliosExists = new ArrayList<>();
 
@@ -141,8 +142,11 @@ public class PedidoCompraJdbcRepositoryAdapter implements PedidoCompraJdbcReposi
 						.map(p -> buildFolioPedCompraAnPosicion(p.getPedCompra(), p.getPosicion())).toList();
 				if (pedidosSapNoExistBd.size() > 0) {
 					this.pedidoCompraJdbcRepository.savePedidoCompra(pedidosSapNoExistBd,claveSilo);
+					System.out.println("----SE INSERTA PEDIDO COMPRA EN TABLA tc_pedido_compra---");
 				}
 				this.pedidoCompraJdbcRepository.updatePedidoCompra(updateCompras,claveSilo,claveMaterial);
+				System.out.println("----SE ACTUALIZA PEDIDO COMPRA EN TABLA tc_pedido_compra---");
+
 				for (List<String> batch : batches) {
 					response.addAll(this.pedidoCompraJdbcRepository.findAllByFolioNumCompra(batch));
 				}
@@ -161,6 +165,7 @@ public class PedidoCompraJdbcRepositoryAdapter implements PedidoCompraJdbcReposi
 	@Override
 	public void executePedidoCompraByFilter(String claveSilo, String claveMaterial,String plantaDestino, String fechaInicio,
 			String fechaFin) {
+		System.out.println("-----PedidoCompraJdbcRepository  executePedidoCompraByFilter()-----");
 		List<String> foliosExists = new ArrayList<>();
 		List<PedidoTrasladoSapResponseDTO> pedidosTrasladoSap = findAllPedidoCTraslado(claveSilo, claveMaterial,
 				plantaDestino,fechaInicio, fechaFin);
@@ -179,6 +184,8 @@ public class PedidoCompraJdbcRepositoryAdapter implements PedidoCompraJdbcReposi
 					.toList();
 			if (pedidosSapNoExistBd.size() > 0) {
 				this.pedidoCompraJdbcRepository.savePedidoCompra(pedidosSapNoExistBd,claveSilo);
+				System.out.println("----SE INSERTA PEDIDO COMPRA EN TABLA tc_pedido_compra---");
+
 			}
 		}
 	}

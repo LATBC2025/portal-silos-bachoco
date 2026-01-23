@@ -19,8 +19,8 @@ public class ReporteProgramaArriboRepositoryAdapter implements ReporteProgramArr
 	}
 
 	@Override
-	public List<ReportePorgramArribo> findAllFilters(Integer siloId, String fechaI, String fechaF) {
-		List<ReporteProgramArriboDTO> reporte=this.reporteProgramArriboRepository.obtenerPedidosFiltrados(siloId, fechaI, fechaF);
+	public List<ReportePorgramArribo> findAllFilters(Integer siloId, Integer idProveedor,String fechaI, String fechaF) {
+		List<ReporteProgramArriboDTO> reporte=this.reporteProgramArriboRepository.obtenerPedidosFiltrados(siloId,idProveedor, fechaI, fechaF);
 		return reporte.stream().map(r->toDomain(r)).toList();
 	}
 	
@@ -32,6 +32,7 @@ public class ReporteProgramaArriboRepositoryAdapter implements ReporteProgramArr
 		arribo.setMaterial(e.getMaterial());
 		arribo.setNumeroPedido(e.getNumeroPedido());
 		arribo.setDestinoPlanta(e.getDestinoPlanta());
+		arribo.setNombreProveedor(e.getNombreProveedor());
 		return arribo;
 	}
 

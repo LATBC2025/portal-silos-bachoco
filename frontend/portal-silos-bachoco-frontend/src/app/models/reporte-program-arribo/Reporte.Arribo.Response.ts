@@ -5,4 +5,5 @@ export interface ReporteArriboResponse{
 	fecha:string;
 	numeroPedido:string;
 	destinoPlanta:string;
+  nombreProveedor:string;
 }

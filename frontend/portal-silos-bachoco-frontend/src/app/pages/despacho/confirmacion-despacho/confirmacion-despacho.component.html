@@ -47,7 +47,7 @@
                 >
                   <option value="0">Seleccionar</option>
                   @for(p of listProveedores; track p.id){
-                    <option [value]="p.id">{{ p.nombre }}</option>
+                    <option [value]="p.numeroProveedor">{{ p.nombre }}</option>
                   }
                 </select>
 

@@ -15,6 +15,7 @@ public class PedidoSapResponseDTO {
 	private String tipoPedido;
 	private String clasePed;
 	private String pedCompra;
+	private String PROVEEDOR;
 	private String contratoLegal;
 	private String param1;
 	private String param2;
@@ -26,7 +27,7 @@ public class PedidoSapResponseDTO {
 	public PedidoSapResponseDTO(String pedidoRelacionado, String cantidadPedido, String cantidadEntrega,
 			String cantidadDespacho, String cantidadPendienteDespacho, String cantidadPendienteSurtir, String material,
 			String posicion, String plantaReceptor, String claseMov, String tipoPedido, String clasePed,
-			String pedCompra, String contratoLegal, String param1, String param2, String param3) {
+			String pedCompra, String PROVEEDOR,String contratoLegal, String param1, String param2, String param3) {
 		this.pedidoRelacionado = pedidoRelacionado;
 		this.cantidadPedido = cantidadPedido;
 		this.cantidadEntrega = cantidadEntrega;
@@ -40,6 +41,7 @@ public class PedidoSapResponseDTO {
 		this.tipoPedido = tipoPedido;
 		this.clasePed = clasePed;
 		this.pedCompra = pedCompra;
+		this.PROVEEDOR = PROVEEDOR;
 		this.contratoLegal = contratoLegal;
 		this.param1 = param1;
 		this.param2 = param2;
@@ -148,6 +150,15 @@ public class PedidoSapResponseDTO {
 
 	public void setPedCompra(String pedCompra) {
 		this.pedCompra = pedCompra;
+	}
+	
+
+	public String getPROVEEDOR() {
+		return PROVEEDOR;
+	}
+
+	public void setPROVEEDOR(String pROVEEDOR) {
+		PROVEEDOR = pROVEEDOR;
 	}
 
 	public String getContratoLegal() {

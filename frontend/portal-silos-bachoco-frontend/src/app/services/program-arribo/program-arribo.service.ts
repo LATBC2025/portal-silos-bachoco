@@ -19,11 +19,12 @@ export class ProgramArriboService {
   findStock(claveSilo: string,material:string): Observable<string> {
     return this.http.get<string>(`${this.apiUrl}/program-arribo/${claveSilo}/${material}`,);
   }
-  findPedidosTralados(claveSilo: string, clavePlanta: string, claveMaterial: string): Observable<ProgramPedTrasladoResponse[]> {
+  findPedidosTralados(claveSilo: string, clavePlanta: string, claveMaterial: string, proveedor: string): Observable<ProgramPedTrasladoResponse[]> {
     let params = new HttpParams();
     params = params.set("claveSilo", claveSilo);
     params = params.set("clavePlanta", clavePlanta);
     params = params.set("claveMaterial", claveMaterial);
+    params = params.set("proveedor",proveedor)
     return this.http.get<ProgramPedTrasladoResponse[]>(`${this.apiUrl}/program-arribo/pedido-traslado`, { params });
   }
 

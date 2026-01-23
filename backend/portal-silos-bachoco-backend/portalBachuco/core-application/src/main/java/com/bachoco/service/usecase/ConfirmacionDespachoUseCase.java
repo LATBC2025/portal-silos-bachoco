@@ -32,8 +32,8 @@ public class ConfirmacionDespachoUseCase {
 		return this.confDespachoJdbcRepository.findCantidadPromediotrasporte(siloId);
 	}
 	
-	public List<ConfirmDespachoResponse> findAllConfirmacionDespacho(String silo,String material,String fechaInicio,String fechaFin){
-		return this.confDespachoJdbcRepository.findAllConfirmacionDespacho(silo, material, fechaInicio, fechaFin);
+	public List<ConfirmDespachoResponse> findAllConfirmacionDespacho(String silo,String material,String fechaInicio,String fechaFin, String proveedor){
+		return this.confDespachoJdbcRepository.findAllConfirmacionDespacho(silo, material, fechaInicio, fechaFin,proveedor);
 	}
 	
 	public ConfirmacionDespachoResponse delete(ConfirmacionDespachoRequest req ) {

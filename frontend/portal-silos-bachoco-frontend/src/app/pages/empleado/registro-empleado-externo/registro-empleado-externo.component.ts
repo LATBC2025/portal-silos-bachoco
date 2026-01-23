@@ -77,16 +77,19 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
     this.findAllEmpExterno();
     //Inicia lógica para cargar informacion de bodegas por silo
     this.formEmpleadoExterno.get('siloId')?.valueChanges.subscribe((val) => {
-      const siloId = Number(val);
+  const siloId = Number(val);
 
-      if (!siloId || siloId === 0) {
-        this.listBodegas = [];
-        this.formEmpleadoExterno.patchValue({ bodegasIds: [] });
-        return;
-      }
+  if (!siloId || siloId === 0) {
+    this.listBodegas = [];
+    this.formEmpleadoExterno.patchValue({ bodegasIds: [] });
+    return;
+  }
 
-      this.loadBodegasBySilo(siloId);
+  // ✅ Si estás en modo edición (Actualizar), precarga seleccionadas
+  const preselectAll = !this.showBtnUpdate; // showBtnUpdate=false => estás editando
+  this.loadBodegasBySilo(siloId, preselectAll);
 });
+
 
   }
 
@@ -97,7 +100,7 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
       correo: new FormControl('', [Validators.required, Validators.min(1), customEmailValidator()]),
       siloId: new FormControl('0', [Validators.required, notZeroStringValidator()]),
       //  NUEVOS CAMPOS
-    sapVendor: new FormControl('', [
+    numeroProveedor: new FormControl('', [
       Validators.required,
       Validators.maxLength(30),
       Validators.pattern(/^[A-Za-z0-9-]+$/)]),
@@ -143,7 +146,7 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
 
     return new EmpleadoExternoRequest(this.getValue('nombre'), this.getValue('rfc'), this.getValue('correo'),
       '', this.getValueNumber('siloId'),
-       this.getValue('sapVendor'),//  nuevo
+       this.getValue('numeroProveedor'),//  nuevo
        bodegasIds //  nuevo
   )
 
@@ -182,7 +185,7 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
       rfc: '',
       correo: '',
       siloId: '0',
-      sapVendor: '', // nuevo
+    numeroProveedor: '',   // ✅ limpiar Proveedor SAP
       bodegasIds: [] // nuevo
     });
     this.utilServ.resetFormGroupState(this.formEmpleadoExterno);
@@ -240,24 +243,37 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
       this.utilServ.markAllControlsAsTouched(this.formEmpleadoExterno);
     }
   }
-  update(item: EmpleadoExternoResponseDTO) {
-    this.showBtnUpdate = false;
-    this.updateId = item.id;
-    this.formEmpleadoExterno.patchValue({
-      nombre: item.nombre,
-      rfc: item.rfc,
-      correo: item.correo,
-      siloId: String(item.siloId),      //  CLAVE
-      sapVendor: (item as any).sapVendor ?? '', // temporal
-      bodegasIds: (item as any).bodegasIds ?? []    });
-  }
+ update(item: EmpleadoExternoResponseDTO) {
+  this.showBtnUpdate = false;
+  this.updateId = item.id;
 
-  loadBodegasBySilo(siloId: number) {
+  this.formEmpleadoExterno.patchValue({
+    nombre: item.nombre,
+    rfc: item.rfc,
+    correo: item.correo,
+    siloId: String(item.siloId),
+    numeroProveedor: item.numeroProveedor ?? ''
+  });
+
+  // ✅ Carga bodegas del silo y déjalas seleccionadas
+  this.loadBodegasBySilo(item.siloId, true);
+}
+
+
+  loadBodegasBySilo(siloId: number, preselectAll: boolean = false) {
   this.bodegaService.findAllBySilo(siloId).subscribe({
-    next: (response: BodegaResponse[]) => {
+    next: (response) => {
       this.listBodegas = response ?? [];
-      // resetea selección al cambiar silo
-      this.formEmpleadoExterno.patchValue({ bodegasIds: [] });
+
+      if (preselectAll) {
+        // ✅ Selecciona TODAS las bodegas del silo
+        const allIds = this.listBodegas.map(b => b.id);
+        this.formEmpleadoExterno.patchValue({ bodegasIds: allIds });
+      } else {
+        // Solo limpia cuando es un cambio normal (por ejemplo al registrar o cambiar silo manualmente)
+        this.formEmpleadoExterno.patchValue({ bodegasIds: [] });
+      }
+
       this.cdr.detectChanges();
     },
     error: (error) => {
@@ -268,5 +284,6 @@ export class RegistroEmpleadoExternoComponent implements OnInit {
     }
   });
 }
+
 
 }

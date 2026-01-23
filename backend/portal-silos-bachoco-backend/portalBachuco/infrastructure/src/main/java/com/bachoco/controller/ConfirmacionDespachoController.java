@@ -42,26 +42,33 @@ public class ConfirmacionDespachoController {
 
 	@PostMapping//registra una confirmacion despacho con movimiento 351
 	public ResponseEntity<ConfirmacionDespachoResponse> save(@RequestBody ConfirmacionDespachoRequest req){
+		System.out.println("Accediendo a controller /v1/confirmacion-despacho/save.....");
+		System.out.println("registra una confirmacion despacho con movimiento 351");
 		ConfirmacionDespachoResponse response =this.confirmacionDespachoUseCase.save(req);
 		return new ResponseEntity<ConfirmacionDespachoResponse>(response,HttpStatus.OK);
 	}
 	
 	@PutMapping("/update-sap")//actualiza la confirmacion despacho con movimiento de sap 351 y 352
 	public ResponseEntity<ConfirmacionDespachoResponse> updateSap(@RequestBody ConfirmacionDespachoRequest req){
+		System.out.println("Accediendo a controller /v1/confirmacion-despacho/update-sap.....");
+		System.out.println("actualiza la confirmacion despacho con movimiento de sap 351 y 352");
 		ConfirmacionDespachoResponse response =this.confirmacionDespachoUseCase.updateSap(req);
 		return new ResponseEntity<ConfirmacionDespachoResponse>(response,HttpStatus.OK);
 	}
 	
 	@PutMapping("/update-sin-sap")//actualiza la confirmacion despacho sin movimientos a sap 
 	public ResponseEntity<ConfirmacionDespachoResponse> updateSinSap(@RequestBody ConfirmacionDespachoRequest req){
+		System.out.println("Accediendo a controller /v1/confirmacion-despacho/update-sin-sap.....");
+		System.out.println("actualiza la confirmacion despacho sin movimientos a sap");
 		ConfirmacionDespachoResponse response =this.confirmacionDespachoUseCase.updateSinSap(req);
 		return new ResponseEntity<ConfirmacionDespachoResponse>(response,HttpStatus.OK);
 	}
 
 	@GetMapping("/filter-list-conf-despacho")
 	public ResponseEntity<List<ConfirmDespachoResponse>> findAllConfirmacionDespacho(@RequestParam String silo,
-			@RequestParam String material,@RequestParam String fechaInicio,@RequestParam String fechaFin){
-		List<ConfirmDespachoResponse>  response =this.confirmacionDespachoUseCase.findAllConfirmacionDespacho(silo,material,fechaInicio,fechaFin);
+			@RequestParam String material,@RequestParam String fechaInicio,@RequestParam String fechaFin, @RequestParam String proveedor){
+		System.out.println("Accediendo a controller /v1/confirmacion-despacho/filter-list-conf-despacho.....");
+		List<ConfirmDespachoResponse>  response =this.confirmacionDespachoUseCase.findAllConfirmacionDespacho(silo,material,fechaInicio,fechaFin,proveedor);
 		return new ResponseEntity<List<ConfirmDespachoResponse>> (response,HttpStatus.OK);
 	}
 	@GetMapping("/filters-pesos")//calcula el peso neto de la confirmacion despacho que cambio el peso tara o bruto para decidir si hacer un 351 y 352
